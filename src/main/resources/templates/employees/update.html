@@ -19,18 +19,15 @@
                 <div class="col-xl-12">
                     <div class="card">
                         <div class="card-body">
-                            <form
-                            th:action="@{/employees/update/{code}(code=${employee.code})}"
-
+                            <form th:action="@{/employees/{code}/update(code=${code})}"
                              th:object="${employee}" th:method="post">
+
+                             <p>パスワードは変更する場合のみ入力してください</p>
                                 <div class="wizard wizard-success mb-4">
-                                    <div class="mb-3">
-                                        <label class="form-label" for="code">社員番号</label>
-                                        <p class="mb-1"></p>
-                                        <div class="col-md-7">
-                                            <input class="form-control" type="text" th:field="*{code}" th:errorclass="err" id="code" readonly>
-                                            <span th:errors="*{code}" class="text-danger"></span>
-                                        </div>
+                                      <label for="code">社員番号</label>
+                                      <BR>
+                                      <input type="hidden" id="code" name="code" th:value="*{code}" th:text="*{code}">
+                                      <br>
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label" for="name">氏名</label>
@@ -40,6 +37,16 @@
                                             <span th:errors="*{name}" class="text-danger"></span>
                                         </div>
                                     </div>
+                                    <div class="mb-3">
+                                        <label class="form-label" for="password">パスワード</label>
+                                        <p class="mb-1"></p>
+                                        <div class="col-md-7">
+                                            <input class="form-control" type="password" th:field="*{password}" th:errorclass="err" id="password">
+                                            <span th:if="${passwordError} neq null" th:text="${passwordError}" class="text-danger"></span>
+                                        </div>
+                                    </div>
+
+
                                     <div class="mb-3">
                                         <label class="form-label" for="role">権限</label>
                                         <p class="mb-1"></p>
@@ -52,7 +59,7 @@
                                 </div>
                                 <p class="mt-5">
                                     <input type="submit" value="更新" class="btn btn-primary">
-                                    <a th:href="@{/employees/{code}/}" class="btn btn-primary">戻る</a>
+                                    <a th:href="@{/employees}" class="btn btn-primary">戻る</a>
                                 </p>
                             </form>
                         </div>

@@ -102,16 +102,21 @@ public class EmployeeController {
 
     // 従業員更新画面を表示
 
-    @GetMapping(value = "/update/{code}")
-    public String gaga(@PathVariable String code, Model model) {
+    @GetMapping(value = "/{code}/update")
+    public String update(@PathVariable String code, Model model) {
         Employee employee = employeeService.findByCode(code);
+        if (employee == null) {
+            // 従業員が見つからない場合の処理
+            // 例えばエラーメッセージを設定して別のビューにリダイレクトするなど
+            return "redirect:/employees"; // エラーが発生した場合に適切なエラー画面にリダイレクトする例
+        }
         model.addAttribute("employee", employee);
         return "employees/update";
     }
 
     // 従業員更新処理
-    @PostMapping(value = "/update/{code}")
-    public String gaga(@PathVariable String code, @Validated Employee employee, BindingResult res, Model model) {
+    @PostMapping(value = "/{code}/update")
+    public String update(@PathVariable String code, @Validated Employee employee, BindingResult res, Model model) {
         if (res.hasErrors()) {
             return "employees/update";
         }
