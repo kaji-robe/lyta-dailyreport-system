@@ -100,13 +100,25 @@ public class EmployeeController {
 
 
 
+    // 従業員更新画面を表示
+
+    @GetMapping(value = "/update/{code}")
+    public String gaga(@PathVariable String code, Model model) {
+        Employee employee = employeeService.findByCode(code);
+        model.addAttribute("employee", employee);
+        return "employees/update";
+    }
+
     // 従業員更新処理
-
-
-
-
-
-
+    @PostMapping(value = "/update/{code}")
+    public String gaga(@PathVariable String code, @Validated Employee employee, BindingResult res, Model model) {
+        if (res.hasErrors()) {
+            return "employees/update";
+        }
+        // 更新処理
+        employeeService.save(employee);
+        return "redirect:/employees";
+    }
 
 
     // 従業員削除処理
