@@ -141,12 +141,8 @@ public class EmployeeController {
             model.addAttribute(ErrorMessage.getErrorName(ErrorKinds.DUPLICATE_EXCEPTION_ERROR),
                     ErrorMessage.getErrorValue(ErrorKinds.DUPLICATE_EXCEPTION_ERROR));
             return "employees/update";
-        } catch (Exception e) {
-            // その他のエラーの場合
-            model.addAttribute(ErrorMessage.getErrorName(ErrorKinds.UNKNOWN_ERROR),
-                    ErrorMessage.getErrorValue(ErrorKinds.UNKNOWN_ERROR));
-            return "employees/update";
         }
+
 
         // 更新処理が成功した場合
         return "redirect:/employees";
