@@ -106,7 +106,7 @@ public class EmployeeController {
         if (employee == null) {
             // 従業員が見つからない場合の処理
             // 例えばエラーメッセージを設定して別のビューにリダイレクトするなど
-            return "redirect:/employees"; // エラーが発生した場合に適切なエラー画面にリダイレクトする例
+            return "redirect:/employees";
         }
         model.addAttribute("employee", employee);
         return "employees/update";
