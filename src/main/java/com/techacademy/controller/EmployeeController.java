@@ -99,7 +99,6 @@ public class EmployeeController {
     }
 
 
-
     // 従業員更新画面を表示
     @GetMapping(value = "/{code}/update")
     public String update(@PathVariable String code, Model model) {
@@ -113,17 +112,45 @@ public class EmployeeController {
         return "employees/update";
     }
 
-    // 従業員更新処理
+ // 従業員更新処理
     @PostMapping(value = "/{code}/update")
     public String update(@PathVariable String code, @Validated Employee employee, BindingResult res, Model model) {
+        // 入力チェック
         if (res.hasErrors()) {
             return "employees/update";
         }
-        // 更新処理
-        employeeService.save(employee);
+
+        // 従業員情報の更新処理
+        try {
+            // 従業員情報を取得
+            Employee existingEmployee = employeeService.findByCode(code);
+            if (existingEmployee == null) {
+                // 従業員が見つからない場合の処理
+                // エラーメッセージを設定して適切な処理を行う
+                return "redirect:/employees";
+            }
+
+            // フォームからのデータで既存の従業員情報を更新
+            existingEmployee.setName(employee.getName());
+            existingEmployee.setPassword(employee.getPassword()); // パスワードを更新する場合のみ
+
+            // 従業員情報を保存
+            employeeService.save(existingEmployee);
+        } catch (DataIntegrityViolationException e) {
+            // 従業員番号重複エラーの場合
+            model.addAttribute(ErrorMessage.getErrorName(ErrorKinds.DUPLICATE_EXCEPTION_ERROR),
+                    ErrorMessage.getErrorValue(ErrorKinds.DUPLICATE_EXCEPTION_ERROR));
+            return "employees/update";
+        } catch (Exception e) {
+            // その他のエラーの場合
+            model.addAttribute(ErrorMessage.getErrorName(ErrorKinds.UNKNOWN_ERROR),
+                    ErrorMessage.getErrorValue(ErrorKinds.UNKNOWN_ERROR));
+            return "employees/update";
+        }
+
+        // 更新処理が成功した場合
         return "redirect:/employees";
     }
-
 
     // 従業員削除処理
     @PostMapping(value = "/{code}/delete")

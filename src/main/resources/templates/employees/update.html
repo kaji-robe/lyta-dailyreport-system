@@ -19,11 +19,8 @@
                 <div class="col-xl-12">
                     <div class="card">
                         <div class="card-body">
-                            <form th:action="@{/employees/{code}/update(code=${code})}"
-                             th:object="${employee}" th:method="post">
-
-                             <p>パスワードは変更する場合のみ入力してください</p>
-
+                            <form th:action="@{/employees/{code}/update(code=${employee.code})}"  th:object="${employee}" th:method="post">
+                             <P>パスワードは変更する場合のみ入力してください</P>
                                 <div class="wizard wizard-success mb-4">
                                       <label for="code">社員番号</label>
                                       <BR>
