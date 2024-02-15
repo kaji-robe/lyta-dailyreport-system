@@ -1,5 +1,8 @@
 package com.techacademy.controller;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -21,6 +24,7 @@ import com.techacademy.service.EmployeeService;
 import com.techacademy.service.UserDetail;
 
 @Controller
+
 @RequestMapping("employees")
 public class EmployeeController {
 
@@ -57,6 +61,7 @@ public class EmployeeController {
     }
 
     // 従業員新規登録処理
+
     @PostMapping(value = "/add")
     public String add(@Validated Employee employee, BindingResult res, Model model) {
 
@@ -111,19 +116,26 @@ public class EmployeeController {
         return "employees/update";
     }
 
- // 従業員更新処理
+    // 従業員更新処理
     @PostMapping(value = "/{code}/update")
     public String update(@PathVariable String code, @Validated Employee employee, BindingResult res, Model model) {
-        // パスワードのチェック
-        ErrorKinds passwordCheckResult = employeeService.employeePasswordCheck(employee);
-        if (ErrorMessage.contains(passwordCheckResult)) {
-            model.addAttribute(ErrorMessage.getErrorName(passwordCheckResult), ErrorMessage.getErrorValue(passwordCheckResult));
-            return "employees/update";
-        }
-
         // 入力チェック
         if (res.hasErrors()) {
             return "employees/update";
+        }
+
+        // パスワードが変更される場合のみエラーチェックを行う
+        if (employee.getPassword() != null && !employee.getPassword().isEmpty()) {
+            // パスワードのエラーチェック
+            if (isHalfSizeCheckError(employee.getPassword())) {
+                model.addAttribute(ErrorMessage.getErrorName(ErrorKinds.HALFSIZE_ERROR), ErrorMessage.getErrorValue(ErrorKinds.HALFSIZE_ERROR));
+                return "employees/update";
+            }
+
+            if (isOutOfRangePassword(employee.getPassword())) {
+                model.addAttribute(ErrorMessage.getErrorName(ErrorKinds.RANGECHECK_ERROR), ErrorMessage.getErrorValue(ErrorKinds.RANGECHECK_ERROR));
+                return "employees/update";
+            }
         }
 
         // 従業員情報の更新処理
@@ -138,21 +150,39 @@ public class EmployeeController {
 
             // フォームからのデータで既存の従業員情報を更新
             existingEmployee.setName(employee.getName());
-            existingEmployee.setPassword(employee.getPassword()); // パスワードを更新する場合のみ
+            if (employee.getPassword() != null && !employee.getPassword().isEmpty()) {
+                existingEmployee.setPassword(employee.getPassword()); // パスワードを更新する場合のみ
+            }
 
             // 従業員情報を保存
             employeeService.save(existingEmployee);
 
         } catch (DataIntegrityViolationException e) {
-          // 従業員番号重複エラーの場合
-         // model.addAttribute(ErrorMessage.getErrorName(ErrorKinds.DUPLICATE_EXCEPTION_ERROR),
-         //         ErrorMessage.getErrorValue(ErrorKinds.DUPLICATE_EXCEPTION_ERROR));
+            // 従業員番号重複エラーの場合
+            model.addAttribute(ErrorMessage.getErrorName(ErrorKinds.DUPLICATE_EXCEPTION_ERROR),
+                    ErrorMessage.getErrorValue(ErrorKinds.DUPLICATE_EXCEPTION_ERROR));
             return "employees/update";
         }
 
-
         // 更新処理が成功した場合
         return "redirect:/employees";
+    }
+
+
+
+    // 従業員パスワードの半角英数字チェック処理
+    private boolean isHalfSizeCheckError(String password) {
+        // 半角英数字チェック
+        Pattern pattern = Pattern.compile("^[A-Za-z0-9]+$");
+        Matcher matcher = pattern.matcher(password);
+        return !matcher.matches();
+    }
+
+    // 従業員パスワードの8文字～16文字チェック処理
+    private boolean isOutOfRangePassword(String password) {
+        // 桁数チェック
+        int passwordLength = password.length();
+        return passwordLength < 8 || 16 < passwordLength;
     }
 
     // 従業員削除処理

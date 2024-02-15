@@ -37,9 +37,6 @@ public class EmployeeService {
             return result;
         }
 
-
-
-
         // 従業員番号重複チェック
         if (findByCode(employee.getCode()) != null) {
             return ErrorKinds.DUPLICATE_ERROR;
@@ -54,6 +51,43 @@ public class EmployeeService {
         employeeRepository.save(employee);
         return ErrorKinds.SUCCESS;
     }
+
+
+    @Transactional
+    public ErrorKinds updateEmployee(String code, String name, String password) {
+        // 従業員情報を取得
+        Employee existingEmployee = findByCode(code);
+        if (existingEmployee == null) {
+            // 従業員が見つからない場合はエラーを返す
+            return ErrorKinds.NOT_FOUND;
+        }
+
+        // 名前が変更された場合、新しい名前をセット
+        if (name != null && !name.equals(existingEmployee.getName())) {
+            existingEmployee.setName(name);
+        }
+
+        // パスワードが変更された場合、新しいパスワードをセットしてエンコード
+        if (password != null && !password.equals(existingEmployee.getPassword())) {
+            // パスワードのバリデーションとエンコードを行う
+            ErrorKinds passwordCheckResult = employeePasswordCheck(existingEmployee);
+            if (passwordCheckResult != ErrorKinds.CHECK_OK) {
+                return passwordCheckResult;
+            }
+            existingEmployee.setPassword(passwordEncoder.encode(password));
+        }
+
+        // 更新日時を設定
+        existingEmployee.setUpdatedAt(LocalDateTime.now());
+
+        // 従業員情報を保存
+        employeeRepository.save(existingEmployee);
+
+        return ErrorKinds.SUCCESS;
+    }
+
+
+
 
     // 従業員削除
     @Transactional
