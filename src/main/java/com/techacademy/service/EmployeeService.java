@@ -27,7 +27,7 @@ public class EmployeeService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    // 従業員保存
+// 従業員保存
     @Transactional
     public ErrorKinds save(Employee employee) {
 
@@ -52,7 +52,7 @@ public class EmployeeService {
         return ErrorKinds.SUCCESS;
     }
 
-//更新用
+//従業員更新
     @Transactional
     public ErrorKinds update(Employee employee) {
         // 従業員情報を取得
@@ -75,6 +75,8 @@ public class EmployeeService {
                 return passwordCheckResult;
             }
             existingEmployee.setPassword(passwordEncoder.encode(employee.getPassword()));
+      //ハッシュ化を二回してしまっているので片方にする。            existingEmployee.setPassword(passwordEncoder.encode(employee.getPassword()));
+
         }
 
         // 更新日時を設定
@@ -85,8 +87,6 @@ public class EmployeeService {
 
         return ErrorKinds.SUCCESS;
     }
-
-
 
 
     // 従業員削除
@@ -138,6 +138,8 @@ public class EmployeeService {
 
         return ErrorKinds.CHECK_OK;
     }
+
+
 
     // 従業員パスワードの半角英数字チェック処理
     private boolean isHalfSizeCheckError(Employee employee) {

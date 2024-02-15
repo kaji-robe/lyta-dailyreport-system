@@ -168,6 +168,8 @@ public class EmployeeController {
         return "redirect:/employees";
     }
 
+
+
     // 更新画面用の従業員パスワードの半角英数字チェック処理
     private boolean isHalfSizeCheckError(String password) {
         // 半角英数字チェック
@@ -176,12 +178,16 @@ public class EmployeeController {
         return !matcher.matches();
     }
 
+
+
     // 更新画面用の従業員パスワードの8文字～16文字チェック処理
     private boolean isOutOfRangePassword(String password) {
         // 桁数チェック
         int passwordLength = password.length();
         return passwordLength < 8 || 16 < passwordLength;
     }
+
+
 
     // 従業員削除処理
     @PostMapping(value = "/{code}/delete")
