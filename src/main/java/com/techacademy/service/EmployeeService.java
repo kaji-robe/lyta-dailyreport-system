@@ -74,8 +74,9 @@ public class EmployeeService {
             if (passwordCheckResult != ErrorKinds.CHECK_OK) {
                 return passwordCheckResult;
             }
-            existingEmployee.setPassword(passwordEncoder.encode(employee.getPassword()));
-      //ハッシュ化を二回してしまっているので片方にする。            existingEmployee.setPassword(passwordEncoder.encode(employee.getPassword()));
+           //existingEmployee.setPassword(passwordEncoder.encode(employee.getPassword()));
+           //ハッシュ化を二回してしまっているので片方にする。
+            existingEmployee.setPassword((employee.getPassword()));
 
         }
 
