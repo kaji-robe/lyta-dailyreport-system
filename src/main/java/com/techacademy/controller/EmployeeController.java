@@ -105,7 +105,6 @@ public class EmployeeController {
         Employee employee = employeeService.findByCode(code);
         if (employee == null) {
             // 従業員が見つからない場合の処理
-            // 例えばエラーメッセージを設定して別のビューにリダイレクトするなど
             return "redirect:/employees";
         }
         model.addAttribute("employee", employee);
@@ -115,6 +114,13 @@ public class EmployeeController {
  // 従業員更新処理
     @PostMapping(value = "/{code}/update")
     public String update(@PathVariable String code, @Validated Employee employee, BindingResult res, Model model) {
+        // パスワードのチェック
+        ErrorKinds passwordCheckResult = employeeService.employeePasswordCheck(employee);
+        if (ErrorMessage.contains(passwordCheckResult)) {
+            model.addAttribute(ErrorMessage.getErrorName(passwordCheckResult), ErrorMessage.getErrorValue(passwordCheckResult));
+            return "employees/update";
+        }
+
         // 入力チェック
         if (res.hasErrors()) {
             return "employees/update";
@@ -136,10 +142,11 @@ public class EmployeeController {
 
             // 従業員情報を保存
             employeeService.save(existingEmployee);
+
         } catch (DataIntegrityViolationException e) {
-            // 従業員番号重複エラーの場合
-            model.addAttribute(ErrorMessage.getErrorName(ErrorKinds.DUPLICATE_EXCEPTION_ERROR),
-                    ErrorMessage.getErrorValue(ErrorKinds.DUPLICATE_EXCEPTION_ERROR));
+          // 従業員番号重複エラーの場合
+         // model.addAttribute(ErrorMessage.getErrorName(ErrorKinds.DUPLICATE_EXCEPTION_ERROR),
+         //         ErrorMessage.getErrorValue(ErrorKinds.DUPLICATE_EXCEPTION_ERROR));
             return "employees/update";
         }
 

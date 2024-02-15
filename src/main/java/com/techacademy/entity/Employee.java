@@ -1,4 +1,3 @@
-
 package com.techacademy.entity;
 
 import java.time.LocalDateTime;

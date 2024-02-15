@@ -37,6 +37,9 @@ public class EmployeeService {
             return result;
         }
 
+
+
+
         // 従業員番号重複チェック
         if (findByCode(employee.getCode()) != null) {
             return ErrorKinds.DUPLICATE_ERROR;
@@ -83,7 +86,7 @@ public class EmployeeService {
     }
 
     // 従業員パスワードチェック
-    private ErrorKinds employeePasswordCheck(Employee employee) {
+    public ErrorKinds employeePasswordCheck(Employee employee) {
 
         // 従業員パスワードの半角英数字チェック処理
         if (isHalfSizeCheckError(employee)) {
