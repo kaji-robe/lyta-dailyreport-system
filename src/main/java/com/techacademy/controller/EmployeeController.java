@@ -1,8 +1,5 @@
 package com.techacademy.controller;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -24,7 +21,6 @@ import com.techacademy.service.EmployeeService;
 import com.techacademy.service.UserDetail;
 
 @Controller
-
 @RequestMapping("employees")
 public class EmployeeController {
 
@@ -61,7 +57,6 @@ public class EmployeeController {
     }
 
     // 従業員新規登録処理
-
     @PostMapping(value = "/add")
     public String add(@Validated Employee employee, BindingResult res, Model model) {
 
@@ -104,89 +99,45 @@ public class EmployeeController {
     }
 
 
+
     // 従業員更新画面を表示
     @GetMapping(value = "/{code}/update")
     public String update(@PathVariable String code, Model model) {
         Employee employee = employeeService.findByCode(code);
         if (employee == null) {
             // 従業員が見つからない場合の処理
+            // 例えばエラーメッセージを設定して別のビューにリダイレクトするなど
             return "redirect:/employees";
         }
         model.addAttribute("employee", employee);
         return "employees/update";
     }
 
-    // 従業員更新処理
+
+
+ // 従業員更新処理
     @PostMapping(value = "/{code}/update")
-    public String update(@PathVariable String code, @Validated Employee employee, BindingResult res, Model model) {
-        // 入力チェック
-        if (res.hasErrors()) {
+    public String update(@PathVariable String code, @ModelAttribute Employee updatedEmployee, BindingResult result, Model model) {
+        if (result.hasErrors()) {
+            // 入力エラーがある場合は、そのまま更新フォームに戻る
             return "employees/update";
         }
 
-        // パスワードが変更される場合のみエラーチェックを行う
-        if (employee.getPassword() != null && !employee.getPassword().isEmpty()) {
-            // パスワードのエラーチェック
-            if (isHalfSizeCheckError(employee.getPassword())) {
-                model.addAttribute(ErrorMessage.getErrorName(ErrorKinds.HALFSIZE_ERROR), ErrorMessage.getErrorValue(ErrorKinds.HALFSIZE_ERROR));
-                return "employees/update";
-            }
+        ErrorKinds updateResult = employeeService.updateEmployee(updatedEmployee);
 
-            if (isOutOfRangePassword(employee.getPassword())) {
-                model.addAttribute(ErrorMessage.getErrorName(ErrorKinds.RANGECHECK_ERROR), ErrorMessage.getErrorValue(ErrorKinds.RANGECHECK_ERROR));
-                return "employees/update";
-            }
-        }
+        if (updateResult != ErrorKinds.SUCCESS) {
+            // エラー種別に基づいてエラーメッセージをモデルに設定
+            String errorAttribute = "error"; // HTMLテンプレートで使用されているエラーメッセージの属性名
+            String errorMessage = ErrorMessage.getErrorValue(updateResult); // エラーメッセージの取得
+            model.addAttribute(errorAttribute, errorMessage);
 
-        // 従業員情報の更新処理
-        try {
-            // 従業員情報を取得
-            Employee existingEmployee = employeeService.findByCode(code);
-            if (existingEmployee == null) {
-                // 従業員が見つからない場合の処理
-                // エラーメッセージを設定して適切な処理を行う
-                return "redirect:/employees";
-            }
-
-            // フォームからのデータで既存の従業員情報を更新
-            existingEmployee.setName(employee.getName());
-            if (employee.getPassword() != null && !employee.getPassword().isEmpty()) {
-                existingEmployee.setPassword(employee.getPassword()); // パスワードを更新する場合のみ
-            }
-
-            // 従業員情報を保存
-            employeeService.update(existingEmployee);
-
-        } catch (DataIntegrityViolationException e) {
-            // 従業員番号重複エラーの場合
-            //model.addAttribute(ErrorMessage.getErrorName(ErrorKinds.DUPLICATE_EXCEPTION_ERROR),
-            //        ErrorMessage.getErrorValue(ErrorKinds.DUPLICATE_EXCEPTION_ERROR));
+            model.addAttribute("employee", updatedEmployee);
             return "employees/update";
         }
 
-        // 更新処理が成功した場合
+        // 更新が成功したら従業員一覧にリダイレクト
         return "redirect:/employees";
     }
-
-
-
-    // 更新画面用の従業員パスワードの半角英数字チェック処理
-    private boolean isHalfSizeCheckError(String password) {
-        // 半角英数字チェック
-        Pattern pattern = Pattern.compile("^[A-Za-z0-9]+$");
-        Matcher matcher = pattern.matcher(password);
-        return !matcher.matches();
-    }
-
-
-
-    // 更新画面用の従業員パスワードの8文字～16文字チェック処理
-    private boolean isOutOfRangePassword(String password) {
-        // 桁数チェック
-        int passwordLength = password.length();
-        return passwordLength < 8 || 16 < passwordLength;
-    }
-
 
 
     // 従業員削除処理

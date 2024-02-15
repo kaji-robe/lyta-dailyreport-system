@@ -27,7 +27,7 @@ public class EmployeeService {
         this.passwordEncoder = passwordEncoder;
     }
 
-// 従業員保存
+    // 従業員保存
     @Transactional
     public ErrorKinds save(Employee employee) {
 
@@ -52,43 +52,50 @@ public class EmployeeService {
         return ErrorKinds.SUCCESS;
     }
 
-//従業員更新
+    // 従業員情報の更新
     @Transactional
-    public ErrorKinds update(Employee employee) {
+    public ErrorKinds updateEmployee(Employee updatedEmployee) {
         // 従業員情報を取得
-        Employee existingEmployee = findByCode(employee.getCode());
+        Employee existingEmployee = employeeRepository.findById(updatedEmployee.getCode()).orElse(null);
         if (existingEmployee == null) {
-            // 従業員が見つからない場合はエラーを返す
-            return ErrorKinds.NOT_FOUND;
+            return ErrorKinds.NOT_FOUND; // 従業員が見つからない
         }
 
-        // 名前が変更された場合、新しい名前をセット
-        if (employee.getName() != null && !employee.getName().equals(existingEmployee.getName())) {
-            existingEmployee.setName(employee.getName());
+        // 名前のバリデーション
+        ErrorKinds nameCheckResult = nameCheck(updatedEmployee);
+        if (nameCheckResult != ErrorKinds.CHECK_OK) {
+            return nameCheckResult;
         }
 
-        // パスワードが変更された場合、新しいパスワードをセットしてエンコード
-        if (employee.getPassword() != null && !employee.getPassword().equals(existingEmployee.getPassword())) {
-            // パスワードのバリデーションとエンコードを行う
-            ErrorKinds passwordCheckResult = employeePasswordCheck(employee);
+        // パスワードが変更されたかチェック
+        if (!passwordEncoder.matches(updatedEmployee.getPassword(), existingEmployee.getPassword())) {
+            // パスワードのバリデーション
+            ErrorKinds passwordCheckResult = employeePasswordCheck(updatedEmployee);
             if (passwordCheckResult != ErrorKinds.CHECK_OK) {
                 return passwordCheckResult;
             }
-           //existingEmployee.setPassword(passwordEncoder.encode(employee.getPassword()));
-           //ハッシュ化を二回してしまっているので片方にする。
-            existingEmployee.setPassword((employee.getPassword()));
-
+            // パスワードの更新
+            existingEmployee.setPassword(passwordEncoder.encode(updatedEmployee.getPassword()));
         }
 
-        // 更新日時を設定
+        // その他の情報の更新
+        existingEmployee.setName(updatedEmployee.getName());
+        existingEmployee.setRole(updatedEmployee.getRole());
         existingEmployee.setUpdatedAt(LocalDateTime.now());
 
-        // 従業員情報を保存
+        // 更新を保存
         employeeRepository.save(existingEmployee);
 
         return ErrorKinds.SUCCESS;
     }
 
+    // 名前のバリデーション
+    private ErrorKinds nameCheck(Employee employee) {
+        if (employee.getName() == null || employee.getName().trim().isEmpty()) {
+            return ErrorKinds.BLANK_ERROR;
+        }
+        return ErrorKinds.CHECK_OK;
+    }
 
     // 従業員削除
     @Transactional
@@ -121,17 +128,15 @@ public class EmployeeService {
     }
 
     // 従業員パスワードチェック
-    public ErrorKinds employeePasswordCheck(Employee employee) {
+    private ErrorKinds employeePasswordCheck(Employee employee) {
 
         // 従業員パスワードの半角英数字チェック処理
         if (isHalfSizeCheckError(employee)) {
-
             return ErrorKinds.HALFSIZE_ERROR;
         }
 
         // 従業員パスワードの8文字～16文字チェック処理
         if (isOutOfRangePassword(employee)) {
-
             return ErrorKinds.RANGECHECK_ERROR;
         }
 
@@ -139,8 +144,6 @@ public class EmployeeService {
 
         return ErrorKinds.CHECK_OK;
     }
-
-
 
     // 従業員パスワードの半角英数字チェック処理
     private boolean isHalfSizeCheckError(Employee employee) {
@@ -158,7 +161,5 @@ public class EmployeeService {
         int passwordLength = employee.getPassword().length();
         return passwordLength < 8 || 16 < passwordLength;
     }
-
-
 
 }
