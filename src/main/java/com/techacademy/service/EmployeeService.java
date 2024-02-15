@@ -52,29 +52,29 @@ public class EmployeeService {
         return ErrorKinds.SUCCESS;
     }
 
-
+//更新用
     @Transactional
-    public ErrorKinds update(String code, String name, String password) {
+    public ErrorKinds update(Employee employee) {
         // 従業員情報を取得
-        Employee existingEmployee = findByCode(code);
+        Employee existingEmployee = findByCode(employee.getCode());
         if (existingEmployee == null) {
             // 従業員が見つからない場合はエラーを返す
             return ErrorKinds.NOT_FOUND;
         }
 
         // 名前が変更された場合、新しい名前をセット
-        if (name != null && !name.equals(existingEmployee.getName())) {
-            existingEmployee.setName(name);
+        if (employee.getName() != null && !employee.getName().equals(existingEmployee.getName())) {
+            existingEmployee.setName(employee.getName());
         }
 
         // パスワードが変更された場合、新しいパスワードをセットしてエンコード
-        if (password != null && !password.equals(existingEmployee.getPassword())) {
+        if (employee.getPassword() != null && !employee.getPassword().equals(existingEmployee.getPassword())) {
             // パスワードのバリデーションとエンコードを行う
-            ErrorKinds passwordCheckResult = employeePasswordCheck(existingEmployee);
+            ErrorKinds passwordCheckResult = employeePasswordCheck(employee);
             if (passwordCheckResult != ErrorKinds.CHECK_OK) {
                 return passwordCheckResult;
             }
-            existingEmployee.setPassword(passwordEncoder.encode(password));
+            existingEmployee.setPassword(passwordEncoder.encode(employee.getPassword()));
         }
 
         // 更新日時を設定
@@ -155,5 +155,7 @@ public class EmployeeService {
         int passwordLength = employee.getPassword().length();
         return passwordLength < 8 || 16 < passwordLength;
     }
+
+
 
 }

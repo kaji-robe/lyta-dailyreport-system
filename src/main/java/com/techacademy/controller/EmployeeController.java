@@ -155,7 +155,7 @@ public class EmployeeController {
             }
 
             // 従業員情報を保存
-            employeeService.save(existingEmployee);
+            employeeService.update(existingEmployee);
 
         } catch (DataIntegrityViolationException e) {
             // 従業員番号重複エラーの場合
