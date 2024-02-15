@@ -20,6 +20,8 @@ import com.techacademy.entity.Employee;
 import com.techacademy.service.EmployeeService;
 import com.techacademy.service.UserDetail;
 
+import jakarta.validation.Valid;
+
 @Controller
 @RequestMapping("employees")
 public class EmployeeController {
@@ -117,28 +119,32 @@ public class EmployeeController {
 
  // 従業員更新処理
     @PostMapping(value = "/{code}/update")
-    public String update(@PathVariable String code, @ModelAttribute Employee updatedEmployee, BindingResult result, Model model) {
+    public String update(@PathVariable String code, @Valid @ModelAttribute Employee updatedEmployee, BindingResult result, Model model) {
         if (result.hasErrors()) {
-            // 入力エラーがある場合は、そのまま更新フォームに戻る
+            // バリデーションエラーがある場合、フォームに戻す
             return "employees/update";
         }
 
+        // 更新処理を呼び出し
         ErrorKinds updateResult = employeeService.updateEmployee(updatedEmployee);
 
         if (updateResult != ErrorKinds.SUCCESS) {
-            // エラー種別に基づいてエラーメッセージをモデルに設定
-            String errorAttribute = "error"; // HTMLテンプレートで使用されているエラーメッセージの属性名
-            String errorMessage = ErrorMessage.getErrorValue(updateResult); // エラーメッセージの取得
-            model.addAttribute(errorAttribute, errorMessage);
+            // パスワードのバリデーションエラーに対する処理
+            if (updateResult == ErrorKinds.HALFSIZE_ERROR || updateResult == ErrorKinds.RANGECHECK_ERROR) {
+                // パスワードに関するエラーメッセージをモデルに追加
+                model.addAttribute("passwordError", ErrorMessage.getErrorValue(updateResult));
+            } else {
+                // その他のエラーに対する処理
+                model.addAttribute("error", ErrorMessage.getErrorValue(updateResult));
+            }
 
             model.addAttribute("employee", updatedEmployee);
             return "employees/update";
         }
 
-        // 更新が成功したら従業員一覧にリダイレクト
+        // 更新が成功した場合は従業員一覧ページへリダイレクト
         return "redirect:/employees";
     }
-
 
     // 従業員削除処理
     @PostMapping(value = "/{code}/delete")
