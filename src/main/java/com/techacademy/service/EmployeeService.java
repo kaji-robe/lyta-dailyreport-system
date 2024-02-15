@@ -54,7 +54,7 @@ public class EmployeeService {
 
 
     @Transactional
-    public ErrorKinds updateEmployee(String code, String name, String password) {
+    public ErrorKinds update(String code, String name, String password) {
         // 従業員情報を取得
         Employee existingEmployee = findByCode(code);
         if (existingEmployee == null) {

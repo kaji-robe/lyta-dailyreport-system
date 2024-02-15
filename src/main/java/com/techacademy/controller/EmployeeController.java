@@ -159,8 +159,8 @@ public class EmployeeController {
 
         } catch (DataIntegrityViolationException e) {
             // 従業員番号重複エラーの場合
-            model.addAttribute(ErrorMessage.getErrorName(ErrorKinds.DUPLICATE_EXCEPTION_ERROR),
-                    ErrorMessage.getErrorValue(ErrorKinds.DUPLICATE_EXCEPTION_ERROR));
+            //model.addAttribute(ErrorMessage.getErrorName(ErrorKinds.DUPLICATE_EXCEPTION_ERROR),
+            //        ErrorMessage.getErrorValue(ErrorKinds.DUPLICATE_EXCEPTION_ERROR));
             return "employees/update";
         }
 
@@ -168,9 +168,7 @@ public class EmployeeController {
         return "redirect:/employees";
     }
 
-
-
-    // 従業員パスワードの半角英数字チェック処理
+    // 更新画面用の従業員パスワードの半角英数字チェック処理
     private boolean isHalfSizeCheckError(String password) {
         // 半角英数字チェック
         Pattern pattern = Pattern.compile("^[A-Za-z0-9]+$");
@@ -178,7 +176,7 @@ public class EmployeeController {
         return !matcher.matches();
     }
 
-    // 従業員パスワードの8文字～16文字チェック処理
+    // 更新画面用の従業員パスワードの8文字～16文字チェック処理
     private boolean isOutOfRangePassword(String password) {
         // 桁数チェック
         int passwordLength = password.length();
