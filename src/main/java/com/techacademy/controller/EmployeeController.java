@@ -1,5 +1,7 @@
 package com.techacademy.controller;
 
+import java.time.LocalDateTime;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -20,7 +22,6 @@ import com.techacademy.entity.Employee;
 import com.techacademy.service.EmployeeService;
 import com.techacademy.service.UserDetail;
 
-import jakarta.validation.Valid;
 
 @Controller
 @RequestMapping("employees")
@@ -123,19 +124,23 @@ public class EmployeeController {
             return "employees/update";
         }
 
-
-        ErrorKinds passwordCheckResult = employeeService.employeePasswordCheck(updatedEmployee);
-        if (ErrorKinds.CHECK_OK != passwordCheckResult) {
+        // パスワードが空白でない場合のみ、エラーチェックを行う
+        if (!"".equals(updatedEmployee.getPassword())) {
+            ErrorKinds passwordCheckResult = employeeService.employeePasswordCheck(updatedEmployee);
             // パスワードチェックエラーがある場合
-            model.addAttribute(ErrorMessage.getErrorName(passwordCheckResult), ErrorMessage.getErrorValue(passwordCheckResult));
-            return "employees/update";
+            if (ErrorKinds.CHECK_OK != passwordCheckResult) {
+                model.addAttribute(ErrorMessage.getErrorName(passwordCheckResult), ErrorMessage.getErrorValue(passwordCheckResult));
+                return "employees/update";
+            }
         }
 
         Employee employee = employeeService.findByCode(code);
-        if (employee == null) {
-            // 従業員が見つからない場合の処理
-            return "redirect:/employees";
-        }
+
+        //ユーザリスト一覧からの遷移なので不要だが一応。
+        //if (employee == null) {
+        //    // 従業員が見つからない場合の処理
+        //    return "redirect:/employees";
+        //}
 
         // パスワードが空白でない場合のみ更新
         if (!"".equals(updatedEmployee.getPassword())) {
@@ -145,6 +150,11 @@ public class EmployeeController {
         // 名前と権限の更新
         employee.setName(updatedEmployee.getName());
         employee.setRole(updatedEmployee.getRole());
+
+
+        //更新日時の実装はサービス側が適切
+        LocalDateTime now = LocalDateTime.now();
+        employee.setUpdatedAt(now);
 
         // 更新処理
         employeeService.save(employee);

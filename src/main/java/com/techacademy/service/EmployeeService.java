@@ -44,11 +44,7 @@ public class EmployeeService {
 
         employee.setDeleteFlg(false);
 
-        LocalDateTime now = LocalDateTime.now();
-        employee.setCreatedAt(now);
-        employee.setUpdatedAt(now);
 
-        employeeRepository.save(employee);
         return ErrorKinds.SUCCESS;
     }
 
@@ -62,12 +58,13 @@ public class EmployeeService {
             return result;
         }
 
+        //更新日時の記録
+        //LocalDateTime now = LocalDateTime.now();
+        //employee.setUpdatedAt(now);
+
+        employeeRepository.save(employee);
         return ErrorKinds.SUCCESS;
     }
-
-
-
-
 
 
     // 従業員削除
@@ -103,6 +100,7 @@ public class EmployeeService {
     // 従業員パスワードチェック
     public ErrorKinds employeePasswordCheck(Employee employee) {
 
+
         // 従業員パスワードの半角英数字チェック処理
         if (isHalfSizeCheckError(employee)) {
             return ErrorKinds.HALFSIZE_ERROR;
@@ -114,9 +112,9 @@ public class EmployeeService {
         }
 
         // パスワードが空白の場合はエラーチェックしない
-        if ("".equals(employee.getPassword())) {
-            return ErrorKinds.SUCCESS;
-        }
+        //if ("".equals(employee.getPassword())) {
+        //    return ErrorKinds.SUCCESS;
+        //}
 
         employee.setPassword(passwordEncoder.encode(employee.getPassword()));
 
