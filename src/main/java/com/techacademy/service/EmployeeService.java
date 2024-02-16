@@ -49,7 +49,7 @@ public class EmployeeService {
     }
 
 
-    // 従業員情報の更新（要修正）
+    // 従業員情報の更新
     @Transactional
     public ErrorKinds update(Employee employee) {
         // パスワードチェック
