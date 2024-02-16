@@ -52,50 +52,23 @@ public class EmployeeService {
         return ErrorKinds.SUCCESS;
     }
 
+
     // 従業員情報の更新
     @Transactional
-    public ErrorKinds updateEmployee(Employee updatedEmployee) {
-        // 従業員情報を取得
-        Employee existingEmployee = employeeRepository.findById(updatedEmployee.getCode()).orElse(null);
-        if (existingEmployee == null) {
-            return ErrorKinds.NOT_FOUND; // 従業員が見つからない
+    public ErrorKinds update(Employee employee) {
+        // パスワードチェック
+        ErrorKinds result = employeePasswordCheck(employee);
+        if (ErrorKinds.CHECK_OK != result) {
+            return result;
         }
-
-        // 名前のバリデーション
-        ErrorKinds nameCheckResult = nameCheck(updatedEmployee);
-        if (nameCheckResult != ErrorKinds.CHECK_OK) {
-            return nameCheckResult;
-        }
-
-        // パスワードが変更されたかチェック
-        if (!passwordEncoder.matches(updatedEmployee.getPassword(), existingEmployee.getPassword())) {
-            // パスワードのバリデーション
-            ErrorKinds passwordCheckResult = employeePasswordCheck(updatedEmployee);
-            if (passwordCheckResult != ErrorKinds.CHECK_OK) {
-                return passwordCheckResult;
-            }
-            // パスワードの更新
-            existingEmployee.setPassword(passwordEncoder.encode(updatedEmployee.getPassword()));
-        }
-
-        // その他の情報の更新
-        existingEmployee.setName(updatedEmployee.getName());
-        existingEmployee.setRole(updatedEmployee.getRole());
-        existingEmployee.setUpdatedAt(LocalDateTime.now());
-
-        // 更新を保存
-        employeeRepository.save(existingEmployee);
 
         return ErrorKinds.SUCCESS;
     }
 
-    // 名前のバリデーション
-    private ErrorKinds nameCheck(Employee employee) {
-        if (employee.getName() == null || employee.getName().trim().isEmpty()) {
-            return ErrorKinds.BLANK_ERROR;
-        }
-        return ErrorKinds.CHECK_OK;
-    }
+
+
+
+
 
     // 従業員削除
     @Transactional
@@ -128,7 +101,7 @@ public class EmployeeService {
     }
 
     // 従業員パスワードチェック
-    private ErrorKinds employeePasswordCheck(Employee employee) {
+    public ErrorKinds employeePasswordCheck(Employee employee) {
 
         // 従業員パスワードの半角英数字チェック処理
         if (isHalfSizeCheckError(employee)) {
@@ -138,6 +111,11 @@ public class EmployeeService {
         // 従業員パスワードの8文字～16文字チェック処理
         if (isOutOfRangePassword(employee)) {
             return ErrorKinds.RANGECHECK_ERROR;
+        }
+
+        // パスワードが空白の場合はエラーチェックしない
+        if ("".equals(employee.getPassword())) {
+            return ErrorKinds.SUCCESS;
         }
 
         employee.setPassword(passwordEncoder.encode(employee.getPassword()));

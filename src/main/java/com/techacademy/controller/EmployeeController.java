@@ -108,43 +108,54 @@ public class EmployeeController {
         Employee employee = employeeService.findByCode(code);
         if (employee == null) {
             // 従業員が見つからない場合の処理
-            // 例えばエラーメッセージを設定して別のビューにリダイレクトするなど
-            return "redirect:/employees";
+           return "redirect:/employees";
         }
         model.addAttribute("employee", employee);
         return "employees/update";
     }
 
 
-
  // 従業員更新処理
     @PostMapping(value = "/{code}/update")
-    public String update(@PathVariable String code, @Valid @ModelAttribute Employee updatedEmployee, BindingResult result, Model model) {
+    public String update(@PathVariable String code, @Validated @ModelAttribute("employee") Employee updatedEmployee, BindingResult result, Model model) {
         if (result.hasErrors()) {
-            // バリデーションエラーがある場合、フォームに戻す
+            // エラーがある場合
             return "employees/update";
         }
 
-        // 更新処理を呼び出し
-        ErrorKinds updateResult = employeeService.updateEmployee(updatedEmployee);
 
-        if (updateResult != ErrorKinds.SUCCESS) {
-            // パスワードのバリデーションエラーに対する処理
-            if (updateResult == ErrorKinds.HALFSIZE_ERROR || updateResult == ErrorKinds.RANGECHECK_ERROR) {
-                // パスワードに関するエラーメッセージをモデルに追加
-                model.addAttribute("passwordError", ErrorMessage.getErrorValue(updateResult));
-            } else {
-                // その他のエラーに対する処理
-                model.addAttribute("error", ErrorMessage.getErrorValue(updateResult));
-            }
-
-            model.addAttribute("employee", updatedEmployee);
+        ErrorKinds passwordCheckResult = employeeService.employeePasswordCheck(updatedEmployee);
+        if (ErrorKinds.CHECK_OK != passwordCheckResult) {
+            // パスワードチェックエラーがある場合
+            model.addAttribute(ErrorMessage.getErrorName(passwordCheckResult), ErrorMessage.getErrorValue(passwordCheckResult));
             return "employees/update";
         }
 
-        // 更新が成功した場合は従業員一覧ページへリダイレクト
+        Employee employee = employeeService.findByCode(code);
+        if (employee == null) {
+            // 従業員が見つからない場合の処理
+            return "redirect:/employees";
+        }
+
+        // パスワードが空白でない場合のみ更新
+        if (!"".equals(updatedEmployee.getPassword())) {
+            employee.setPassword(updatedEmployee.getPassword());
+        }
+
+        // 名前と権限の更新
+        employee.setName(updatedEmployee.getName());
+        employee.setRole(updatedEmployee.getRole());
+
+        // 更新処理
+        employeeService.save(employee);
+
         return "redirect:/employees";
     }
+
+
+
+
+
 
     // 従業員削除処理
     @PostMapping(value = "/{code}/delete")
