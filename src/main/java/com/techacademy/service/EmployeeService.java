@@ -49,22 +49,39 @@ public class EmployeeService {
     }
 
 
-    // 従業員情報の更新
+    //更新処理
     @Transactional
-    public ErrorKinds update(Employee employee) {
-        // パスワードチェック
-        ErrorKinds result = employeePasswordCheck(employee);
-        if (ErrorKinds.CHECK_OK != result) {
-            return result;
+    public ErrorKinds updateEmployee(String code, Employee updatedEmployee) {
+        // 従業員を検索
+        Employee employee = findByCode(code);
+        if (employee == null) {
+            return ErrorKinds.NOT_FOUND_ERROR;
         }
 
-        //更新日時の記録
-        //LocalDateTime now = LocalDateTime.now();
-        //employee.setUpdatedAt(now);
+        // 名前と権限の更新
+        employee.setName(updatedEmployee.getName());
+        employee.setRole(updatedEmployee.getRole());
 
+        // パスワードが空白でない場合のみ更新
+        if (!"".equals(updatedEmployee.getPassword())) {
+            // パスワードチェック
+            ErrorKinds passwordCheckResult = employeePasswordCheck(updatedEmployee);
+            if (passwordCheckResult != ErrorKinds.CHECK_OK) {
+                return passwordCheckResult; // パスワードチェックエラー
+            }
+            employee.setPassword(updatedEmployee.getPassword());
+        }
+
+        // 更新日時の更新
+        LocalDateTime now = LocalDateTime.now();
+        employee.setUpdatedAt(now);
+
+        // 更新処理
         employeeRepository.save(employee);
+
         return ErrorKinds.SUCCESS;
     }
+
 
 
     // 従業員削除

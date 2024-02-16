@@ -1,7 +1,5 @@
 package com.techacademy.controller;
 
-import java.time.LocalDateTime;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -124,40 +122,17 @@ public class EmployeeController {
             return "employees/update";
         }
 
-        // パスワードが空白でない場合のみ、エラーチェックを行う
-        if (!"".equals(updatedEmployee.getPassword())) {
-            ErrorKinds passwordCheckResult = employeeService.employeePasswordCheck(updatedEmployee);
-            // パスワードチェックエラーがある場合
-            if (ErrorKinds.CHECK_OK != passwordCheckResult) {
-                model.addAttribute(ErrorMessage.getErrorName(passwordCheckResult), ErrorMessage.getErrorValue(passwordCheckResult));
-                return "employees/update";
-            }
+        // 従業員の更新処理をサービスに
+        ErrorKinds updateResult = employeeService.updateEmployee(code, updatedEmployee);
+
+        if (updateResult == ErrorKinds.NOT_FOUND_ERROR) {
+            // 従業員が見つからない場合の処理
+            return "redirect:/employees";
+        } else if (updateResult != ErrorKinds.SUCCESS) {
+            // 更新に失敗した場合の処理
+            model.addAttribute(ErrorMessage.getErrorName(updateResult), ErrorMessage.getErrorValue(updateResult));
+            return "employees/update";
         }
-
-        Employee employee = employeeService.findByCode(code);
-
-        //ユーザリスト一覧からの遷移なので不要だが一応。
-        //if (employee == null) {
-        //    // 従業員が見つからない場合の処理
-        //    return "redirect:/employees";
-        //}
-
-        // パスワードが空白でない場合のみ更新
-        if (!"".equals(updatedEmployee.getPassword())) {
-            employee.setPassword(updatedEmployee.getPassword());
-        }
-
-        // 名前と権限の更新
-        employee.setName(updatedEmployee.getName());
-        employee.setRole(updatedEmployee.getRole());
-
-
-        //更新日時の実装はサービス側が適切
-        LocalDateTime now = LocalDateTime.now();
-        employee.setUpdatedAt(now);
-
-        // 更新処理
-        employeeService.save(employee);
 
         return "redirect:/employees";
     }
