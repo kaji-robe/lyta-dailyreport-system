@@ -114,7 +114,7 @@ public class EmployeeService {
         return employee;
     }
 
-    // 従業員パスワードチェックbbbbbbb
+    // 従業員パスワードチェック
     public ErrorKinds employeePasswordCheck(Employee employee) {
 
 
