@@ -13,96 +13,90 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-
-
 import com.techacademy.constants.ErrorKinds;
 import com.techacademy.constants.ErrorMessage;
-import com.techacademy.entity.Employee;
 import com.techacademy.entity.Report;
+import com.techacademy.entity.Employee;
 import com.techacademy.service.EmployeeService;
 import com.techacademy.service.ReportService;
 import com.techacademy.service.UserDetail;
 
-
-
-public class ReportConttolloer {
-
     @Controller
-    @RequestMapping("employees")
-    public class EmployeeController {
+    @RequestMapping("reports")
+    public class ReportController {
 
-        private final EmployeeService employeeService;
+        private final ReportService reportService;
 
         @Autowired
-        public EmployeeController(EmployeeService employeeService) {
-            this.employeeService = employeeService;
+        public ReportController(ReportService reportService) {
+            this.reportService = reportService;
         }
 
         // 従業員一覧画面
         @GetMapping
         public String list(Model model) {
 
-            model.addAttribute("listSize", employeeService.findAll().size());
-            model.addAttribute("employeeList", employeeService.findAll());
+            model.addAttribute("listSize", reportService.findAll().size());
+            model.addAttribute("report", reportService.findAll());
 
-            return "employees/list";
+            return "reports/list";
         }
 
         // 従業員詳細画面
         @GetMapping(value = "/{code}/")
         public String detail(@PathVariable String code, Model model) {
 
-            model.addAttribute("employee", employeeService.findByCode(code));
-            return "employees/detail";
+            model.addAttribute("report", reportService.findByCode(code));
+            return "reports/detail";
         }
 
         // 従業員新規登録画面
         @GetMapping(value = "/add")
-        public String create(@ModelAttribute Employee employee) {
+        public String create(@ModelAttribute Report report) {
 
-            return "employees/new";
+            return "reports/new";
         }
 
         // 従業員新規登録処理
         @PostMapping(value = "/add")
-        public String add(@Validated Employee employee, BindingResult res, Model model) {
+        public String add(@Validated Report report, BindingResult res, Model model) {
 
             // パスワード空白チェック
             /*
              * エンティティ側の入力チェックでも実装は行えるが、更新の方でパスワードが空白でもチェックエラーを出さずに
              * 更新出来る仕様となっているため上記を考慮した場合に別でエラーメッセージを出す方法が簡単だと判断
              */
-            if ("".equals(employee.getPassword())) {
+            if ("".equals(report.getPassword())) {
                 // パスワードが空白だった場合
                 model.addAttribute(ErrorMessage.getErrorName(ErrorKinds.BLANK_ERROR),
                         ErrorMessage.getErrorValue(ErrorKinds.BLANK_ERROR));
 
-                return create(employee);
+                return create(report);
 
             }
 
             // 入力チェック
             if (res.hasErrors()) {
-                return create(employee);
+                return create(report);
             }
 
             // 論理削除を行った従業員番号を指定すると例外となるためtry~catchで対応
             // (findByIdでは削除フラグがTRUEのデータが取得出来ないため)
             try {
-                ErrorKinds result = employeeService.save(employee);
+                ErrorKinds result = reportService.save(report);
 
                 if (ErrorMessage.contains(result)) {
                     model.addAttribute(ErrorMessage.getErrorName(result), ErrorMessage.getErrorValue(result));
-                    return create(employee);
+                    return create(report);
                 }
 
             } catch (DataIntegrityViolationException e) {
                 model.addAttribute(ErrorMessage.getErrorName(ErrorKinds.DUPLICATE_EXCEPTION_ERROR),
                         ErrorMessage.getErrorValue(ErrorKinds.DUPLICATE_EXCEPTION_ERROR));
-                return create(employee);
+                return create(report);
             }
 
-            return "redirect:/employees";
+            return "redirect:/reports";
         }
 
 
@@ -110,37 +104,37 @@ public class ReportConttolloer {
         // 従業員更新画面を表示する
         @GetMapping(value = "/{code}/update")
         public String update(@PathVariable String code, Model model) {
-            Employee employee = employeeService.findByCode(code);
-            if (employee == null) {
+            Report report = reportService.findByCode(code);
+            if (report == null) {
                 // 従業員が見つからない場合の処理
-               return "redirect:/employees";
+               return "redirect:/reports";
             }
-            model.addAttribute("employee", employee);
-            return "employees/update";
+            model.addAttribute("report", report);
+            return "reports/update";
         }
 
 
      // 従業員の更新処理
         @PostMapping(value = "/{code}/update")
-        public String update(@PathVariable String code, @Validated @ModelAttribute("employee") Employee updatedEmployee, BindingResult result, Model model) {
+        public String update(@PathVariable String code, @Validated @ModelAttribute("report") Report updatedReport, BindingResult result, Model model) {
             if (result.hasErrors()) {
                 // エラーがある場合
-                return "employees/update";
+                return "reports/update";
             }
 
             // 従業員の更新処理をサービスに
-            ErrorKinds updateResult = employeeService.updateEmployee(code, updatedEmployee);
+            ErrorKinds updateResult = reportService.updateReport(code, updatedReport);
 
             if (updateResult == ErrorKinds.NOT_FOUND_ERROR) {
                 // 従業員が見つからない場合の処理
-                return "redirect:/employees";
+                return "redirect:/reports";
             } else if (updateResult != ErrorKinds.SUCCESS) {
                 // 更新に失敗した場合の処理
                 model.addAttribute(ErrorMessage.getErrorName(updateResult), ErrorMessage.getErrorValue(updateResult));
-                return "employees/update";
+                return "reports/update";
             }
 
-            return "redirect:/employees";
+            return "redirect:/reports";
         }
 
 
@@ -152,11 +146,11 @@ public class ReportConttolloer {
         @PostMapping(value = "/{code}/delete")
         public String delete(@PathVariable String code, @AuthenticationPrincipal UserDetail userDetail, Model model) {
 
-            ErrorKinds result = employeeService.delete(code, userDetail);
+            ErrorKinds result = reportService.delete(code, userDetail);
 
             if (ErrorMessage.contains(result)) {
                 model.addAttribute(ErrorMessage.getErrorName(result), ErrorMessage.getErrorValue(result));
-                model.addAttribute("employee", employeeService.findByCode(code));
+                model.addAttribute("report", reportService.findByCode(code));
                 return detail(code, model);
             }
 
@@ -167,4 +161,3 @@ public class ReportConttolloer {
 
 
 
-}
