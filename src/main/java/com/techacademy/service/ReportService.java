@@ -11,10 +11,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.techacademy.constants.ErrorKinds;
-
-import com.techacademy.entity.Employee;
-import com.techacademy.repository.EmployeeRepository;
-
 import com.techacademy.entity.Report;
 import com.techacademy.repository.ReportRepository;
 
@@ -33,7 +29,27 @@ public class ReportService {
     }
 
 
-<<<<<<< HEAD
+    // ■■ 従業員一覧表示処理 ■■
+    public List<Report> findAll() {
+        return reportRepository.findAll();
+    }
+
+
+
+    // ■■ 1件を検索 ■■
+    public Report findByCode(String code) {
+        // findByIdで検索
+        Optional<Report> option = reportRepository.findById(code);
+        // 取得できなかった場合はnullを返す
+        Report report = option.orElse(null);
+        return report;
+    }
+
+
+    // ■■■ 従業員保存 ■■■
+    @Transactional
+    public ErrorKinds save(Report report) {
+
         // パスワードチェック
         ErrorKinds result = reportPasswordCheck(report);
         if (ErrorKinds.CHECK_OK != result) {
@@ -49,24 +65,7 @@ public class ReportService {
 
 
         return ErrorKinds.SUCCESS;
-=======
-    // ■■ 日報一覧表示処理 ■■
-    public List<Report> findAll() {
-        return reportRepository.findAll();
->>>>>>> branch 'main' of https://github.com/kaji-robe/lyta-dailyreport-system
     }
-
-    // ■■ 日報1件を検索 ■■
-    public Report findByCode(String code) {
-        // findByIdで検索
-        Optional<Report> option = reportRepository.findById(code);
-        // 取得できなかった場合はnullを返す
-        Report report = option.orElse(null);
-        return report;
-    }
-
-
-
 
 
     //■■■ 更新処理 ■■■
