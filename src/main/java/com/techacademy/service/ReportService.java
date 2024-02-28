@@ -34,7 +34,7 @@ public class ReportService {
 
 
     // ■■ 日報一覧表示処理 ■■
-    public List<Report> findAllReports() {
+    public List<Report> findAll() {
         return reportRepository.findAll();
     }
 
