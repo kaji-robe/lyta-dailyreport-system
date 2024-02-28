@@ -138,7 +138,7 @@ public class EmployeeService {
         return ErrorKinds.CHECK_OK;
     }
 
-    // 従業員パスワードの半角英数字チェック処理aa
+    // 従業員パスワードの半角英数字チェック処理
     private boolean isHalfSizeCheckError(Employee employee) {
 
         // 半角英数字チェック
