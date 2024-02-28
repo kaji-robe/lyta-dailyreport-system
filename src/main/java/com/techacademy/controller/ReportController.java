@@ -36,8 +36,8 @@ import com.techacademy.service.UserDetail;
         @GetMapping
         public String list(Model model) {
 
-            model.addAttribute("listSize", reportService.findAll().size());
-            model.addAttribute("report", reportService.findAll());
+            model.addAttribute("listSize", reportService.findAllReports().size());
+            model.addAttribute("reportList", reportService.findAllReports());
 
             return "reports/list";
         }
