@@ -35,7 +35,6 @@ public class EmployeeController {
     // 従業員一覧画面
     @GetMapping
     public String list(Model model) {
-
         model.addAttribute("listSize", employeeService.findAll().size());
         model.addAttribute("employeeList", employeeService.findAll());
 
@@ -53,7 +52,6 @@ public class EmployeeController {
     // 従業員新規登録画面
     @GetMapping(value = "/add")
     public String create(@ModelAttribute Employee employee) {
-
         return "employees/new";
     }
 

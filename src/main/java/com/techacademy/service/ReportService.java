@@ -38,7 +38,7 @@ public class ReportService {
             return result;
         }
 
-        // 従業員番号重複チェック
+        // 従業員番号重複チェックあ
         if (findByCode(report.getCode()) != null) {
             return ErrorKinds.DUPLICATE_ERROR;
         }

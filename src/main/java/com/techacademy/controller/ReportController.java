@@ -32,20 +32,18 @@ import com.techacademy.service.UserDetail;
             this.reportService = reportService;
         }
 
-        // 従業員一覧画面
+        // 日報　一覧画面
         @GetMapping
         public String list(Model model) {
 
             model.addAttribute("listSize", reportService.findAll().size());
             model.addAttribute("report", reportService.findAll());
-
             return "reports/list";
         }
 
         // 従業員詳細画面
         @GetMapping(value = "/{code}/")
         public String detail(@PathVariable String code, Model model) {
-
             model.addAttribute("report", reportService.findByCode(code));
             return "reports/detail";
         }
