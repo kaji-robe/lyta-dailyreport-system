@@ -4,6 +4,9 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
+
+import com.techacademy.entity.Employee.Role;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -14,8 +17,11 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
 
 
+@Data
 @Entity
 @Table(name = "reports")
 public class Report {
@@ -34,7 +40,7 @@ public class Report {
 
     //日付
     @Column
-    @NotEmpty
+    @NotNull
     private LocalDate reportDate;
 
     //タイトル
@@ -58,10 +64,12 @@ public class Report {
 
     //登録日時
     @Column(nullable = false)
+    @NotNull
     private LocalDateTime createdAt;
 
     //更新日時
     @Column(nullable = false)
+    @NotNull
     private LocalDateTime updatedAt;
 
 }
