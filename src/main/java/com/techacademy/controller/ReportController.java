@@ -31,7 +31,7 @@ import com.techacademy.service.UserDetail;
             this.reportService = reportService;
         }
 
-        // 日報　一覧画面の表示
+        // ■■ 日報　一覧画面の表示
         @GetMapping
         public String list(Model model) {
 
@@ -42,7 +42,7 @@ import com.techacademy.service.UserDetail;
 
 
 
-        // 日報　新規登録画面の表示
+        // ■■ 日報　新規登録画面の表示
         @GetMapping(value = "/add")
         public String create(@ModelAttribute Report report) {
             return "reports/new";
@@ -50,7 +50,7 @@ import com.techacademy.service.UserDetail;
 
 
 
-        // 日報　新規登録の処理
+        // ■■ 日報　新規登録の処理
         @PostMapping(value = "/add")
         public String add(@Validated Report report, BindingResult res, Model model) {
             // 入力チェック
@@ -61,7 +61,7 @@ import com.techacademy.service.UserDetail;
         }
 
 
-        // 日報 更新画面を表示する
+        // ■■ 日報 更新画面を表示する
         //@GetMapping(value = "/{code}/update")
         //public String update(@PathVariable Integer code, Model model) {
         //    Report report = reportService.findByCode(code);
