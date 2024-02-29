@@ -31,9 +31,10 @@ public class ReportService {
 
 
     // ■■ 日報一覧表示処理 ■■
-    public List<Report> findAllReports() {
+    public List<Report> findAll() {
         return reportRepository.findAll();
     }
+
 
     // ■■ 日報 1件を検索 ■■
     public Report findByCode(Integer code) {

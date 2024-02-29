@@ -16,8 +16,6 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotEmpty;
 
 
-
-
 @Entity
 @Table(name = "reports")
 public class Report {
