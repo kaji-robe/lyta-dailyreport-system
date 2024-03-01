@@ -48,4 +48,19 @@ public class ReportService {
     }
 
 
+    // ■■ 日報保存
+    @Transactional
+    public ErrorKinds save(Report report) {
+
+
+        return ErrorKinds.SUCCESS;
+    }
+
+
+
+
+
+
+
+
 }

@@ -49,7 +49,7 @@ public class EmployeeController {
         return "employees/detail";
     }
 
-    // 従業員新規登録画面
+    // 従業員新規登録画面の表示
     @GetMapping(value = "/add")
     public String create(@ModelAttribute Employee employee) {
         return "employees/new";
