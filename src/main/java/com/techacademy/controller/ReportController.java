@@ -58,6 +58,12 @@ import com.techacademy.service.UserDetail;
             }
             return "redirect:/reports";
 
+
+            //★★★
+            //エラーチェックのために従業員更新系の処理を入れた方がいい。　updateをADDに変えて。
+            //★★★
+
+
 //            try {
 //            ErrorKinds result = reportService.save(report);
 //
