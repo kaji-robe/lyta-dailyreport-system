@@ -43,42 +43,22 @@ import com.techacademy.service.UserDetail;
 
         // ■■ 日報　新規登録画面の表示
         @GetMapping(value = "/add")
-        public String create(@ModelAttribute Report report) {
+        public String create(@ModelAttribute Report report, @AuthenticationPrincipal UserDetail userDetail, Model model) {
+            model.addAttribute("loginUser", userDetail.getEmployee());
             return "reports/new";
         }
 
 
         // ■日報 新規登録処理
         @PostMapping(value = "/add")
-        public String add(@Validated Report report, BindingResult res, Model model) {
+        public String add(@Validated Report report, @AuthenticationPrincipal UserDetail userDetail, BindingResult res, Model model) {
 
             // 入力チェック
             if (res.hasErrors()) {
-                return create(report);
+                return create(report, userDetail, model);
             }
             return "redirect:/reports";
 
-
-            //★★★
-            //エラーチェックのために従業員更新系の処理を入れた方がいい。　updateをADDに変えて。
-            //★★★
-
-
-//            try {
-//            ErrorKinds result = reportService.save(report);
-//
-//            if (ErrorMessage.contains(result)) {
-//                model.addAttribute(ErrorMessage.getErrorName(result), ErrorMessage.getErrorValue(result));
-//                return create(report);
-//            }
-//
-//        } catch (DataIntegrityViolationException e) {
-//            model.addAttribute(ErrorMessage.getErrorName(ErrorKinds.DUPLICATE_EXCEPTION_ERROR),
-//                    ErrorMessage.getErrorValue(ErrorKinds.DUPLICATE_EXCEPTION_ERROR));
-//            return create(report);
-//        }
-//
-//        return "redirect:/employees";
     }
 
 

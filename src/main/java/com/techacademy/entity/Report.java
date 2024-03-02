@@ -6,6 +6,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import com.techacademy.entity.Employee.Role;
 
 import jakarta.persistence.Column;
@@ -41,6 +43,7 @@ public class Report {
     //日付
     @Column
     @NotNull
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate reportDate;
 
     //タイトル
