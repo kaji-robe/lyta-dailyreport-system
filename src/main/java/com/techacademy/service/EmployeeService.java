@@ -100,10 +100,14 @@ public class EmployeeService {
         return ErrorKinds.SUCCESS;
     }
 
+
+
     // 従業員一覧表示処理
     public List<Employee> findAll() {
         return employeeRepository.findAll();
     }
+
+
 
     // 1件を検索
     public Employee findByCode(String code) {
@@ -113,6 +117,8 @@ public class EmployeeService {
         Employee employee = option.orElse(null);
         return employee;
     }
+
+
 
     // 従業員パスワードチェック
     public ErrorKinds employeePasswordCheck(Employee employee) {
@@ -138,6 +144,8 @@ public class EmployeeService {
         return ErrorKinds.CHECK_OK;
     }
 
+
+
     // 従業員パスワードの半角英数字チェック処理
     private boolean isHalfSizeCheckError(Employee employee) {
 
@@ -146,6 +154,8 @@ public class EmployeeService {
         Matcher matcher = pattern.matcher(employee.getPassword());
         return !matcher.matches();
     }
+
+
 
     // 従業員パスワードの8文字～16文字チェック処理
     public boolean isOutOfRangePassword(Employee employee) {

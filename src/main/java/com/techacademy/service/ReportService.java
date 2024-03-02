@@ -32,6 +32,7 @@ public class ReportService {
     }
 
 
+
     // ■■ 日報一覧表示処理 ■■
     public List<Report> findAll() {
         return reportRepository.findAll();
@@ -39,9 +40,9 @@ public class ReportService {
 
 
     // ■■ 日報 1件を検索 ■■
-    public Report findByCode(Integer code) {
+    public Report findById(Integer id) {
         // findByIdで検索
-        Optional<Report> option = reportRepository.findById(code);
+        Optional<Report> option = reportRepository.findById(id);
         // 取得できなかった場合はnullを返す
         Report report = option.orElse(null);
         return report;
@@ -51,6 +52,41 @@ public class ReportService {
     @Transactional
     public ErrorKinds save(Report report) {
         return ErrorKinds.SUCCESS;
+    }
+
+
+    //■■　日報更新処理
+    @Transactional
+    public ErrorKinds updateReport(Integer id, Report updatedReport) {
+        // 日報を検索
+        Report report = findById(id);
+        if (report == null) {
+            return ErrorKinds.NOT_FOUND_ERROR;
+        }
+
+        // 名前と権限の更新
+        ////employee.setName(updatedEmployee.getName());
+        //employee.setRole(updatedEmployee.getRole());
+        // パスワードが空白でない場合のみ更新
+        //if (!"".equals(updatedEmployee.getPassword())) {
+        //    // パスワードチェック
+        //    ErrorKinds passwordCheckResult = employeePasswordCheck(updatedEmployee);
+        //    if (passwordCheckResult != ErrorKinds.CHECK_OK) {
+        //        return passwordCheckResult; // パスワードチェックエラー
+        //    }
+        //    employee.setPassword(updatedEmployee.getPassword());
+        // }
+
+
+        // タイトル、内容、
+        report.setTitle(updatedReport.getTitle());
+        report.setContent(updatedReport.getContent());
+        report.setReportDate(updatedReport.getReportDate());
+        report.setUpdatedAt(LocalDateTime.now());
+
+        reportRepository.save(report);
+        return ErrorKinds.SUCCESS;
+
     }
 
 

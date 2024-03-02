@@ -41,7 +41,7 @@ public class Employee {
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL)
     private List<Report> reportList;
 
-    // ID
+    // 社員番号
     @Id
     @Column(length = 10)
     @NotEmpty

@@ -65,21 +65,21 @@ import com.techacademy.service.UserDetail;
 
 
         // ■■日報詳細画面
-        @GetMapping(value = "/{code}/")
-        public String detail(@PathVariable Integer code, Model model) {
+        @GetMapping(value = "/{id}/")
+        public String detail(@PathVariable Integer id, Model model) {
 
-            model.addAttribute("report", reportService.findByCode(code));
+            model.addAttribute("report", reportService.findById(id));
             return "reports/detail";
         }
 
 
 
         // 日報更新画面を表示する
-        @GetMapping(value = "/{code}/update")
-        public String update(@PathVariable Integer code, Model model) {
-            Report report = reportService.findByCode(code);
+        @GetMapping(value = "/{id}/update")
+        public String updateList(@PathVariable Integer id, Model model) {
+            Report report = reportService.findById(id);
             if (report == null) {
-                // 従業員が見つからない場合の処理
+                // 日報が見つからない場合の処理
                return "redirect:/reports";
             }
             model.addAttribute("report", report);
@@ -87,34 +87,28 @@ import com.techacademy.service.UserDetail;
         }
 
 
-//     // 従業員の更新処理
-//        @PostMapping(value = "/{code}/update")
-//        public String update(@PathVariable String code, @Validated @ModelAttribute("employee") Employee updatedEmployee, BindingResult result, Model model) {
-//            if (result.hasErrors()) {
-//                // エラーがある場合
-//                return "employees/update";
-//            }
-//
-//            // 従業員の更新処理をサービスに
-//            ErrorKinds updateResult = employeeService.updateEmployee(code, updatedEmployee);
-//
-//            if (updateResult == ErrorKinds.NOT_FOUND_ERROR) {
-//                // 従業員が見つからない場合の処理
-//                return "redirect:/employees";
-//            } else if (updateResult != ErrorKinds.SUCCESS) {
-//                // 更新に失敗した場合の処理
-//                model.addAttribute(ErrorMessage.getErrorName(updateResult), ErrorMessage.getErrorValue(updateResult));
-//                return "employees/update";
-//            }
-//
-//            return "redirect:/employees";
-//        }
-//
-//
-//
-//
-//
-//
+     // 日報の更新処理
+        @PostMapping(value = "/{id}/update")
+        public String updateReport(@PathVariable Integer id, @Validated @ModelAttribute("Report") Report updatedReport, BindingResult result, Model model) {
+            if (result.hasErrors()) {
+                // エラーがある場合
+                model.addAttribute("report", updatedReport);
+                return "reports/update";
+            }
+
+            // 日報の更新処理をサービスに
+            ErrorKinds updateResult = reportService.updateReport(id, updatedReport);
+            if (updateResult != ErrorKinds.SUCCESS) {
+                // 更新に失敗した場合の処理
+                model.addAttribute("errorMessage", ErrorMessage.getErrorValue(updateResult));
+                return "reports/update";
+            }
+
+            // 更新が成功した場合、日報一覧ページにリダイレクト
+            return "redirect:/reports";
+        }
+
+
 //        // 従業員削除処理
 //        @PostMapping(value = "/{code}/delete")
 //        public String delete(@PathVariable String code, @AuthenticationPrincipal UserDetail userDetail, Model model) {
