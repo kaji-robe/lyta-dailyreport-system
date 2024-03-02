@@ -31,6 +31,10 @@
 
                                 <table class="table table-striped">
                                     <tr>
+                                        <th>ID</th>
+                                        <td class="align-middle" th:text="${report.id}"></td>
+                                    </tr>
+                                    <tr>
                                         <th class="w-25">日付</th>
                                         <td class="align-middle" th:text="${report.reportDate}"></td>
                                     </tr>
@@ -61,7 +65,7 @@
 
                                 <div class="mt-5 row g-1">
                                     <div class="col-auto">
-                                        <a th:href="@{/report/{id}/update(id=${id})}" class="btn btn-primary">更新</a>
+                                        <a th:href="@{/reports/{id}/update(id=${report.id})}" class="btn btn-primary">更新</a>
                                     </div>
 
 

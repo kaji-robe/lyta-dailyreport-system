@@ -25,12 +25,15 @@
                         <div class="card-body">
                             <form th:action="@{/employees/{code}/update(code=${employee.code})}"  th:object="${employee}" th:method="post">
                              <P>パスワードは変更する場合のみ入力してください</P>
+
                                 <div class="wizard wizard-success mb-4">
                                       <label for="code">社員番号</label>
                                       <BR>
                                       <input type="hidden" id="code" name="code" th:value="*{code}" th:text="*{code}">
                                       <br>
                                     </div>
+
+
                                     <div class="mb-3">
                                         <label class="form-label" for="name">氏名</label>
                                         <p class="mb-1"></p>
@@ -39,6 +42,8 @@
                                             <span th:errors="*{name}" class="text-danger"></span>
                                         </div>
                                         </div>
+
+
                                     <div class="mb-3">
                                         <label class="form-label" for="password">パスワード</label>
                                         <p class="mb-1"></p>
@@ -47,6 +52,8 @@
                                             <span th:if="${passwordError} neq null" th:text="${passwordError}" class="text-danger"></span>
                                         </div>
                                     </div>
+
+
                                     <div class="mb-3">
                                         <label class="form-label" for="role">権限</label>
                                         <p class="mb-1"></p>

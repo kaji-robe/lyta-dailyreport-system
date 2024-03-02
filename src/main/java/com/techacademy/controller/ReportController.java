@@ -74,19 +74,19 @@ import com.techacademy.service.UserDetail;
 
 
 
-//        // 従業員更新画面を表示する
-//        @GetMapping(value = "/{code}/update")
-//        public String update(@PathVariable String code, Model model) {
-//            Employee employee = employeeService.findByCode(code);
-//            if (employee == null) {
-//                // 従業員が見つからない場合の処理
-//               return "redirect:/employees";
-//            }
-//            model.addAttribute("employee", employee);
-//            return "employees/update";
-//        }
-//
-//
+        // 日報更新画面を表示する
+        @GetMapping(value = "/{code}/update")
+        public String update(@PathVariable Integer code, Model model) {
+            Report report = reportService.findByCode(code);
+            if (report == null) {
+                // 従業員が見つからない場合の処理
+               return "redirect:/reports";
+            }
+            model.addAttribute("report", report);
+            return "reports/update";
+        }
+
+
 //     // 従業員の更新処理
 //        @PostMapping(value = "/{code}/update")
 //        public String update(@PathVariable String code, @Validated @ModelAttribute("employee") Employee updatedEmployee, BindingResult result, Model model) {
