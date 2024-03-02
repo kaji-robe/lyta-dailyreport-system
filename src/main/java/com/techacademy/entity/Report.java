@@ -35,7 +35,7 @@ public class Report {
 
     //ID
     @Id
-    @NotEmpty
+    @NotNull
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
     private Integer id;

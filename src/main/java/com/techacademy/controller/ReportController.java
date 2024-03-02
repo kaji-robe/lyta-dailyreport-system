@@ -34,7 +34,6 @@ import com.techacademy.service.UserDetail;
         // ■■ 日報　一覧画面の表示
         @GetMapping
         public String list(Model model) {
-
             model.addAttribute("listSize", reportService.findAll().size());
             model.addAttribute("reportList", reportService.findAll());
             return "reports/list";
@@ -49,17 +48,29 @@ import com.techacademy.service.UserDetail;
         }
 
 
-        // ■日報 新規登録処理
+
+        // ■■日報 新規登録処理
         @PostMapping(value = "/add")
-        public String add(@Validated Report report, @AuthenticationPrincipal UserDetail userDetail, BindingResult res, Model model) {
+        //public String add(@Validated Report report, @AuthenticationPrincipal UserDetail userDetail, BindingResult res, Model model) {
+        //各項目のエラーチェックは未実装なのでこれから。
+        public String add(Report report, @AuthenticationPrincipal UserDetail userDetail, BindingResult res, Model model) {
 
             // 入力チェック
             if (res.hasErrors()) {
                 return create(report, userDetail, model);
-            }
+                }
             return "redirect:/reports";
+            }
 
-    }
+
+
+        // ■■日報詳細画面
+        @GetMapping(value = "/{code}/")
+        public String detail(@PathVariable Integer code, Model model) {
+
+            model.addAttribute("report", reportService.findByCode(code));
+            return "reports/detail";
+        }
 
 
 

@@ -16,7 +16,6 @@
 
             <!-- ★★★★日報　詳細★★★★ -->
 
-<!-- 要修正
         <div class="mt-3 h-100 col-sm-10">
             <div class="container-fluid p-0">
                 <h1 class="h3 mb-3">日報 詳細</h1>
@@ -33,28 +32,28 @@
                                 <table class="table table-striped">
                                     <tr>
                                         <th class="w-25">日付</th>
-                                        <td class="align-middle" th:text="${employee.code}"></td>
+                                        <td class="align-middle" th:text="${report.reportDate}"></td>
                                     </tr>
                                     <tr>
                                         <th>氏名</th>
-                                        <td class="align-middle" th:text="${employee.name}"></td>
+                                        <td class="align-middle" th:text="${report.employee.name}"></td>
                                     </tr>
                                     <tr>
                                         <th>タイトル</th>
-                                        <td class="align-middle" th:text="${employee.role.getValue}"></td>
+                                        <td class="align-middle" th:text="${report.title}"></td>
                                     </tr>
                                     <tr>
                                         <th>内容</th>
-                                        <td class="align-middle" th:text="${employee.role.getValue}"></td>
+                                        <td class="align-middle" th:text="${report.content}"></td>
                                     </tr>
 
                                     <tr>
                                         <th>登録日時</th>
-                                        <td class="align-middle" th:text="${#temporals.format(employee.createdAt, 'yyyy-MM-dd hh:mm:ss')}"></td>
+                                        <td class="align-middle" th:text="${#temporals.format(report.createdAt, 'yyyy-MM-dd hh:mm:ss')}"></td>
                                     </tr>
                                     <tr>
                                         <th>更新日時</th>
-                                        <td class="align-middle" th:text="${#temporals.format(employee.updatedAt, 'yyyy-MM-dd hh:mm:ss')}"></td>
+                                        <td class="align-middle" th:text="${#temporals.format(report.updatedAt, 'yyyy-MM-dd hh:mm:ss')}"></td>
                                     </tr>
                                 </table>
 
@@ -62,7 +61,7 @@
 
                                 <div class="mt-5 row g-1">
                                     <div class="col-auto">
-                                        <a th:href="@{/employees/{code}/update(code=${code})}" class="btn btn-primary">更新</a>
+                                        <a th:href="@{/report/{id}/update(id=${id})}" class="btn btn-primary">更新</a>
                                     </div>
 
 
@@ -74,7 +73,7 @@
                                     </div>
 
                                     <div class="col-auto">
-                                        <a th:href="@{/employees}" class="btn btn-primary">戻る</a>
+                                        <a th:href="@{/reports}" class="btn btn-primary">戻る</a>
                                     </div>
                                 </div>
                                 <span th:if="${deleteError} neq null" th:text="${deleteError}" class="text-danger"></span>
@@ -87,7 +86,6 @@
         </div>
     </div>
 
--->
 
 
 </body>
