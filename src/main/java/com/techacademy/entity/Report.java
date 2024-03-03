@@ -20,6 +20,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 
@@ -35,7 +36,6 @@ public class Report {
 
     //ID
     @Id
-    @NotNull
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
     private Integer id;
@@ -67,12 +67,10 @@ public class Report {
 
     //登録日時
     @Column(nullable = false)
-    @NotNull
     private LocalDateTime createdAt;
 
     //更新日時
     @Column(nullable = false)
-    @NotNull
     private LocalDateTime updatedAt;
 
 }

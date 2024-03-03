@@ -27,6 +27,7 @@ public class EmployeeService {
         this.passwordEncoder = passwordEncoder;
     }
 
+
     // 従業員保存
     @Transactional
     public ErrorKinds save(Employee employee) {
@@ -44,9 +45,16 @@ public class EmployeeService {
 
         employee.setDeleteFlg(false);
 
+        LocalDateTime now = LocalDateTime.now();
+        employee.setCreatedAt(now);
+        employee.setUpdatedAt(now);
+
+        employeeRepository.save(employee);
+
 
         return ErrorKinds.SUCCESS;
     }
+
 
 
     //更新処理

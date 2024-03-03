@@ -39,6 +39,7 @@ public class ReportService {
     }
 
 
+
     // ■■ 日報 1件を検索 ■■
     public Report findById(Integer id) {
         // findByIdで検索
@@ -48,11 +49,26 @@ public class ReportService {
         return report;
     }
 
+
+
     // ■■ 日報保存
     @Transactional
     public ErrorKinds save(Report report) {
+
+        report.setDeleteFlg(false);
+
+        LocalDateTime now = LocalDateTime.now();
+        report.setCreatedAt(now);
+        report.setUpdatedAt(now);
+
+        reportRepository.save(report);
+
         return ErrorKinds.SUCCESS;
     }
+
+
+
+
 
 
     //■■　日報更新処理

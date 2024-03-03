@@ -51,14 +51,21 @@ import com.techacademy.service.UserDetail;
 
         // ■■日報 新規登録処理
         @PostMapping(value = "/add")
-        //public String add(@Validated Report report, @AuthenticationPrincipal UserDetail userDetail, BindingResult res, Model model) {
-        //各項目のエラーチェックは未実装なのでこれから。
-        public String add(Report report, @AuthenticationPrincipal UserDetail userDetail, BindingResult res, Model model) {
+        public String add(@Validated Report report, @AuthenticationPrincipal UserDetail userDetail, BindingResult res, Model model) {
+        //各項目のエラーチェックを未実装にするなら下記を使う。
+        //public String add(Report report, @AuthenticationPrincipal UserDetail userDetail, BindingResult res, Model model) {
 
             // 入力チェック
             if (res.hasErrors()) {
                 return create(report, userDetail, model);
                 }
+
+            // ログインしているユーザーの情報を取得
+            Employee loginUser = userDetail.getEmployee();
+            report.setEmployee(loginUser);
+
+            reportService.save(report); // サービスを呼び出して新しい日報を保存
+
             return "redirect:/reports";
             }
 

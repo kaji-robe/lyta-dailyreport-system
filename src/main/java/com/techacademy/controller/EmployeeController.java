@@ -32,6 +32,8 @@ public class EmployeeController {
         this.employeeService = employeeService;
     }
 
+
+
     // 従業員一覧画面
     @GetMapping
     public String list(Model model) {
@@ -41,6 +43,8 @@ public class EmployeeController {
         return "employees/list";
     }
 
+
+
     // 従業員詳細画面
     @GetMapping(value = "/{code}/")
     public String detail(@PathVariable String code, Model model) {
@@ -49,11 +53,15 @@ public class EmployeeController {
         return "employees/detail";
     }
 
+
+
     // 従業員新規登録画面の表示
     @GetMapping(value = "/add")
     public String create(@ModelAttribute Employee employee) {
         return "employees/new";
     }
+
+
 
     // 従業員新規登録処理
     @PostMapping(value = "/add")
@@ -112,6 +120,7 @@ public class EmployeeController {
     }
 
 
+
  // 従業員の更新処理
     @PostMapping(value = "/{code}/update")
     public String update(@PathVariable String code, @Validated @ModelAttribute("employee") Employee updatedEmployee, BindingResult result, Model model) {
@@ -134,8 +143,6 @@ public class EmployeeController {
 
         return "redirect:/employees";
     }
-
-
 
 
 
