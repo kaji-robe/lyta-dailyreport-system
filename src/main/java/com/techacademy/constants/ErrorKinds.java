@@ -16,8 +16,20 @@ public enum ErrorKinds {
     DUPLICATE_ERROR,
     // ログイン中削除チェックエラー
     LOGINCHECK_ERROR,
-    // 日付チェックエラー
+
+// 日付チェックエラー
     DATECHECK_ERROR,
+// 日報空白日付チェックエラー
+    DATECHECK_BLANK_ERROR,
+// 日報タイトル空白チェックエラー
+    TITLECHECK_BLANK_ERROR,
+// 日報タイトル桁数チェックエラー
+    TITLECHECK_RANGE_ERROR,
+// 日報内容空白チェックエラー
+    CONTENTCHECK_BLANK_ERROR,
+// 日報内容桁数チェックエラー
+    CONTENTCHECK_RANGE_ERROR,
+
     // チェックOK
     CHECK_OK,
     // 正常終了
