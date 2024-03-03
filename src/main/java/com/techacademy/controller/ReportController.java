@@ -44,6 +44,7 @@ import com.techacademy.service.UserDetail;
         @GetMapping(value = "/add")
         public String create(@ModelAttribute Report report, @AuthenticationPrincipal UserDetail userDetail, Model model) {
             model.addAttribute("loginUser", userDetail.getEmployee());
+
             return "reports/new";
         }
 
@@ -52,14 +53,13 @@ import com.techacademy.service.UserDetail;
         // ■■日報 新規登録処理
         @PostMapping(value = "/add")
         public String add(@Validated Report report, @AuthenticationPrincipal UserDetail userDetail, BindingResult res, Model model) {
-        //各項目のエラーチェックを未実装にするなら下記を使う。
-        //public String add(Report report, @AuthenticationPrincipal UserDetail userDetail, BindingResult res, Model model) {
 
             // 入力チェック
             if (res.hasErrors()) {
                 return create(report, userDetail, model);
                 }
 
+            
             // ログインしているユーザーの情報を取得
             Employee loginUser = userDetail.getEmployee();
             report.setEmployee(loginUser);

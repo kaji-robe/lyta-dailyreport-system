@@ -42,18 +42,18 @@ public class Report {
 
     //日付
     @Column
-    @NotNull
+    @NotNull(message = "日付を入力してください")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate reportDate;
 
     //タイトル
     @Column(length = 100, nullable = false)
-    @NotEmpty
+    @NotEmpty(message = "タイトルを入力してください")
     private String title;
 
     //内容
     @Column(columnDefinition = "LONGTEXT", nullable = false)
-    @NotEmpty
+    @NotEmpty(message = "内容を入力してください")
     private String content;
 
     //社員番号
