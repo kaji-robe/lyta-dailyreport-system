@@ -32,6 +32,18 @@ public class ErrorMessage {
                     new ArrayList<String>(Arrays.asList("deleteError", "ログイン中の従業員を削除することは出来ません")));
             // 同一日付チェック用エラーメッセージ
             put(ErrorKinds.DATECHECK_ERROR, new ArrayList<String>(Arrays.asList("reportDateError", "既に登録されている日付です")));
+            // 日報日付空白チェック用エラーメッセージ
+            put(ErrorKinds.DATECHECK_BLANK_ERROR, new ArrayList<String>(Arrays.asList("reportDateBlankError", "値を入力してください")));
+           // 日報タイトル空白チェック用エラーメッセージ
+            put(ErrorKinds.TITLECHECK_BLANK_ERROR, new ArrayList<String>(Arrays.asList("reportTitleBlankError", "値を入力してください")));
+            // 日報タイトル100文字桁数チェック用エラーメッセージ
+            put(ErrorKinds.TITLECHECK_RANGE_ERROR, new ArrayList<String>(Arrays.asList("reportTitleRangeError", "100文字以下で入力してください")));
+            // 日報内容空白チェック用エラーメッセージ
+            put(ErrorKinds.CONTENTCHECK_BLANK_ERROR, new ArrayList<String>(Arrays.asList("reportContentBlankError", "値を入力してください")));
+            // 日報内容600文字桁数チェック用エラーメッセージ
+            put(ErrorKinds.CONTENTCHECK_RANGE_ERROR, new ArrayList<String>(Arrays.asList("reportContentRangekError", "600文字以下で入力してください")));
+
+
         }
     };
 
