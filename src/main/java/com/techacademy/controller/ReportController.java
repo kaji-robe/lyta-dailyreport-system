@@ -50,24 +50,28 @@ import com.techacademy.service.UserDetail;
 
 
 
-        // ■■日報 新規登録処理
+//         ■■日報 新規登録処理
         @PostMapping(value = "/add")
-        public String add(@Validated Report report, @AuthenticationPrincipal UserDetail userDetail, BindingResult res, Model model) {
+        public String add(@Validated @ModelAttribute("report") Report report, BindingResult Res, @AuthenticationPrincipal UserDetail userDetail, Model model) {
 
-            // 入力チェック
-            if (res.hasErrors()) {
-                return create(report, userDetail, model);
-                }
+            if (Res.hasErrors()) {
+                // バリデーションエラーがある場合、フォームを再表示
+                model.addAttribute("loginUser", userDetail.getEmployee());
+                return "reports/new";
+            }
 
-            
-            // ログインしているユーザーの情報を取得
+            // 以下の処理はバリデーションが成功した場合のみ実行される
             Employee loginUser = userDetail.getEmployee();
             report.setEmployee(loginUser);
 
-            reportService.save(report); // サービスを呼び出して新しい日報を保存
+            ErrorKinds result = reportService.save(report);
+            if (result != ErrorKinds.SUCCESS) {
+                model.addAttribute("errorMessage", ErrorMessage.getErrorValue(result));
+                return "reports/new";
+            }
 
             return "redirect:/reports";
-            }
+        }
 
 
 
@@ -87,6 +91,7 @@ import com.techacademy.service.UserDetail;
             Report report = reportService.findById(id);
             if (report == null) {
                 // 日報が見つからない場合の処理
+               model.addAttribute("report", report);
                return "redirect:/reports";
             }
             model.addAttribute("report", report);
@@ -94,12 +99,15 @@ import com.techacademy.service.UserDetail;
         }
 
 
+
      // 日報の更新処理
         @PostMapping(value = "/{id}/update")
-        public String updateReport(@PathVariable Integer id, @Validated @ModelAttribute("Report") Report updatedReport, BindingResult result, Model model) {
-            if (result.hasErrors()) {
-                // エラーがある場合
-                model.addAttribute("report", updatedReport);
+        public String updateReport(@PathVariable Integer id, @Validated @ModelAttribute("report") Report updatedReport,
+                BindingResult res, @AuthenticationPrincipal UserDetail userDetail,Model model) {
+            if (res.hasErrors()) {
+                // バリデーションエラーがある場合、フォームを再表示
+                model.addAttribute("loginUser", userDetail.getEmployee());
+                model.addAttribute("report", updatedReport); // 現在の入力値を保持
                 return "reports/update";
             }
 
@@ -108,12 +116,15 @@ import com.techacademy.service.UserDetail;
             if (updateResult != ErrorKinds.SUCCESS) {
                 // 更新に失敗した場合の処理
                 model.addAttribute("errorMessage", ErrorMessage.getErrorValue(updateResult));
+                model.addAttribute("report", updatedReport); // エラー時も現在の入力値を保持
                 return "reports/update";
             }
 
             // 更新が成功した場合、日報一覧ページにリダイレクト
             return "redirect:/reports";
         }
+
+
 
 
 //        // 従業員削除処理

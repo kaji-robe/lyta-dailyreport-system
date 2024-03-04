@@ -23,12 +23,10 @@ import org.springframework.transaction.annotation.Transactional;
 public class ReportService {
 
     private final ReportRepository reportRepository;
-    private final PasswordEncoder passwordEncoder;
 
     @Autowired
     public ReportService(ReportRepository reportRepository, PasswordEncoder passwordEncoder) {
         this.reportRepository = reportRepository;
-        this.passwordEncoder = passwordEncoder;
     }
 
 
@@ -94,7 +92,7 @@ public class ReportService {
         // }
 
 
-        // タイトル、内容、
+        // タイトル、内容、時間の更新
         report.setTitle(updatedReport.getTitle());
         report.setContent(updatedReport.getContent());
         report.setReportDate(updatedReport.getReportDate());
