@@ -34,14 +34,14 @@ import com.techacademy.service.UserDetail;
         }
 
 
-
+        // ■■ 日報　一覧画面の表示
         @GetMapping
         public String list(@AuthenticationPrincipal UserDetail userDetail, Model model) {
             // ログインユーザーの取得
             Employee loggedInUser = userDetail.getEmployee();
             List<Report> reportList;
 
-            // ADMIN権限を持つユーザーは全ての日報を表示、それ以外（GENERALなど）は自分の日報のみ表示
+            // ADMIN権限を持つユーザーは全ての日報を表示、GENERAは自分の日報のみ表示
             if (userDetail.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ADMIN"))) {
                 reportList = reportService.findAll();
             } else {
@@ -54,7 +54,7 @@ import com.techacademy.service.UserDetail;
         }
 
 
-        // ■■ 日報　一覧画面の表示　全リストと分別なく表示
+//        // ■■ 初期の日報一覧画面の表示 全リストを表示
 //        @GetMapping
 //        public String list(Model model) {
 //            model.addAttribute("listSize", reportService.findAll().size());
@@ -111,7 +111,7 @@ import com.techacademy.service.UserDetail;
 
 
 
-        // 日報更新画面を表示する
+        // ■■日報更新画面を表示する
         @GetMapping(value = "/{id}/update")
         public String updateList(@PathVariable Integer id, Model model) {
             Report report = reportService.findById(id);
@@ -126,7 +126,7 @@ import com.techacademy.service.UserDetail;
 
 
 
-     // 日報の更新処理
+     // ■■日報の更新処理
         @PostMapping(value = "/{id}/update")
         public String updateReport(@PathVariable Integer id, @Validated @ModelAttribute("report") Report updatedReport,
                 BindingResult res, @AuthenticationPrincipal UserDetail userDetail,Model model) {
@@ -153,28 +153,24 @@ import com.techacademy.service.UserDetail;
 
 
 
-//        // 従業員削除処理
-//        @PostMapping(value = "/{code}/delete")
-//        public String delete(@PathVariable String code, @AuthenticationPrincipal UserDetail userDetail, Model model) {
-//
-//            ErrorKinds result = employeeService.delete(code, userDetail);
-//
-//            if (ErrorMessage.contains(result)) {
-//                model.addAttribute(ErrorMessage.getErrorName(result), ErrorMessage.getErrorValue(result));
-//                model.addAttribute("employee", employeeService.findByCode(code));
-//                return detail(code, model);
-//            }
-//
-//            return "redirect:/employees";
-//        }
-//
-//    }
+        // ■■日報削除処理
+        @PostMapping(value = "/{id}/delete")
+        public String delete(@PathVariable Integer id, @AuthenticationPrincipal UserDetail userDetail, Model model) {
 
+            ErrorKinds result = reportService.delete(id, userDetail);
 
+            if (ErrorMessage.contains(result)) {
+                model.addAttribute(ErrorMessage.getErrorName(result), ErrorMessage.getErrorValue(result));
+                model.addAttribute("report", reportService.findById(id));
+                return detail(id, model);
+            }
 
-
-
+            return "redirect:/reports";
+        }
 
     }
+
+
+
 
 

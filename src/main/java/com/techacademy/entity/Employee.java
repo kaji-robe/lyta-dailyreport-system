@@ -75,6 +75,11 @@ public class Employee {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
+    public Object getId() {
+        // TODO 自動生成されたメソッド・スタブ
+        return null;
+    }
+
 
 
 

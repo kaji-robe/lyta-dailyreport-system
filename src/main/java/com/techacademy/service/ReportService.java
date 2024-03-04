@@ -31,14 +31,21 @@ public class ReportService {
 
 
 
-   // ■■ 既存の日報一覧表示処理 分別なしですべて表示
+//   // ■■ 既存の日報一覧表示処理 分別なしですべて表示
+//    public List<Report> findAll() {
+//        return reportRepository.findAll();
+//    }
+
+
+    // ■■論理削除されていない全ての日報を取得
     public List<Report> findAll() {
-        return reportRepository.findAll();
+        return reportRepository.findByDeleteFlgFalse();
     }
 
-    // 特定の従業員に関連する日報を取得するメソッド
+    // ■■特定の従業員に関連する日報を取得するメソッド
     public List<Report> findByEmployee(Employee employee) {
-        return reportRepository.findByEmployee(employee);
+        //return reportRepository.findByEmployee(employee);
+        return reportRepository.findByEmployeeAndDeleteFlgFalse(employee);
     }
 
     // ■■ 日報 1件を検索 ■■
@@ -66,9 +73,6 @@ public class ReportService {
 
         return ErrorKinds.SUCCESS;
     }
-
-
-
 
 
 
@@ -105,6 +109,19 @@ public class ReportService {
         return ErrorKinds.SUCCESS;
 
     }
+
+
+    // 日報削除
+    @Transactional
+    public ErrorKinds delete(Integer id, UserDetail userDetail) {
+        Report report = findById(id);
+        LocalDateTime now = LocalDateTime.now();
+        report.setUpdatedAt(now);
+        report.setDeleteFlg(true);
+
+        return ErrorKinds.SUCCESS;
+    }
+
 
 
 
