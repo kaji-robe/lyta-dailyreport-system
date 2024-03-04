@@ -1,5 +1,6 @@
 package com.techacademy.service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -58,21 +59,100 @@ public class ReportService {
     }
 
 
-
-    // ■■ 日報保存
+ // 日報保存処理
     @Transactional
-    public ErrorKinds save(Report report) {
+    public ErrorKinds save(Report report, Employee employee) {
+        // 日付の重複チェック
+        Optional<Report> existingReport = reportRepository.findByEmployeeAndReportDate(employee, report.getReportDate());
+        if (existingReport.isPresent()) {
+            // 既に同じ日付で日報が存在する場合
+            return ErrorKinds.DUPLICATE_DATE_ERROR;
+        }
 
-        report.setDeleteFlg(false);
+        // 重複がない場合、日報を保存
+        report.setEmployee(employee); // ログイン中の従業員を設定
+        report.setDeleteFlg(false); // 削除フラグをfalseに設定
 
         LocalDateTime now = LocalDateTime.now();
-        report.setCreatedAt(now);
-        report.setUpdatedAt(now);
+        report.setCreatedAt(now); // 作成日時を設定
+        report.setUpdatedAt(now); // 更新日時を設定
 
-        reportRepository.save(report);
+        reportRepository.save(report); // 日報を保存
 
-        return ErrorKinds.SUCCESS;
+        return ErrorKinds.SUCCESS; // 成功した場合
     }
+
+    // 日付の重複チェック
+    public ErrorKinds checkDuplicateDate(LocalDate reportDate, Employee employee) {
+        Optional<Report> existingReport = reportRepository.findByEmployeeAndReportDate(employee, reportDate);
+        if (existingReport.isPresent()) {
+            // 既に同じ日付で日報が存在する場合
+            return ErrorKinds.DUPLICATE_DATE_ERROR;
+        }
+        return ErrorKinds.SUCCESS; // 重複がない場合
+    }
+
+
+// // 日報保存処理
+//    @Transactional
+//    public ErrorKinds save(Report report, Employee employee) {
+//        // 日付の重複チェック
+//        Optional<Report> existingReport = reportRepository.findByEmployeeAndReportDate(employee, report.getReportDate());
+//        if (existingReport.isPresent()) {
+//            // 既に同じ日付で日報が存在する場合
+//            return ErrorKinds.DUPLICATE_DATE_ERROR;
+//        }
+//
+//        // 重複がない場合、日報を保存
+//        report.setEmployee(employee); // ログイン中の従業員を設定
+//        report.setDeleteFlg(false); // 削除フラグをfalseに設定
+//
+//        LocalDateTime now = LocalDateTime.now();
+//        report.setCreatedAt(now); // 作成日時を設定
+//        report.setUpdatedAt(now); // 更新日時を設定
+//
+//        reportRepository.save(report); // 日報を保存
+//
+//        return ErrorKinds.SUCCESS; // 成功した場合
+//    }
+//
+
+
+////  // ■■ 日報保存
+//    @Transactional
+//    public ErrorKinds save(Report report, Employee loginUser) {
+//        report.setEmployee(loginUser);
+//
+//        Optional<Report> existingReport = reportRepository.findByEmployeeAndReportDate(report.getEmployee(), report.getReportDate());
+//        if (existingReport.isPresent()) {
+//            // 同じ日付で既に日報が存在する場合はエラーを返す
+//            return ErrorKinds.DUPLICATE_DATE_ERROR;
+//        }
+//
+//        report.setDeleteFlg(false); // 論理削除フラグをfalseに設定
+//        LocalDateTime now = LocalDateTime.now();
+//        report.setCreatedAt(now);
+//        report.setUpdatedAt(now);
+//
+//        reportRepository.save(report);
+//        return ErrorKinds.SUCCESS;
+//    }
+
+
+//    // ■■ 最初の日報保存
+//    @Transactional
+//    public ErrorKinds save(Report report) {
+//
+//        report.setDeleteFlg(false);
+//
+//        LocalDateTime now = LocalDateTime.now();
+//        report.setCreatedAt(now);
+//        report.setUpdatedAt(now);
+//
+//        reportRepository.save(report);
+//
+//        return ErrorKinds.SUCCESS;
+//    }
 
 
 

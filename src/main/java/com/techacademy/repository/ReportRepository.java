@@ -5,6 +5,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.techacademy.entity.Employee;
 import com.techacademy.entity.Report;
 
+import java.time.LocalDate;
+import java.util.Optional;
+
 public interface ReportRepository extends JpaRepository<Report, Integer> {
 
     // 論理削除されていない全ての日報を取得
@@ -17,4 +20,8 @@ public interface ReportRepository extends JpaRepository<Report, Integer> {
 
     // 特定のEmployeeに関連するReportのリストを取得
     List<Report> findByEmployee(Employee employee);
-}
+
+
+ // 日付の重複チェック
+    Optional<Report> findByEmployeeAndReportDate(Employee employee, LocalDate reportDate);
+    }

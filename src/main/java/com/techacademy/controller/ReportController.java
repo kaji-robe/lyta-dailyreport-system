@@ -74,23 +74,25 @@ import com.techacademy.service.UserDetail;
             return "reports/new";
         }
 
-
-
-//         ■■日報 新規登録処理
+        // 日報新規登録処理
         @PostMapping(value = "/add")
-        public String add(@Validated @ModelAttribute("report") Report report, BindingResult Res, @AuthenticationPrincipal UserDetail userDetail, Model model) {
-
-            if (Res.hasErrors()) {
-                // バリデーションエラーがある場合、フォームを再表示
+        public String add(@Validated @ModelAttribute("report") Report report, BindingResult res, @AuthenticationPrincipal UserDetail userDetail, Model model) {
+            if (res.hasErrors()) {
                 model.addAttribute("loginUser", userDetail.getEmployee());
                 return "reports/new";
             }
 
-            // 以下の処理はバリデーションが成功した場合のみ実行される
             Employee loginUser = userDetail.getEmployee();
-            report.setEmployee(loginUser);
 
-            ErrorKinds result = reportService.save(report);
+            // 日付の重複チェックのみを行う
+            ErrorKinds result = reportService.checkDuplicateDate(report.getReportDate(), loginUser);
+            if (result == ErrorKinds.DUPLICATE_DATE_ERROR) {
+                model.addAttribute("errorMessage", ErrorMessage.getErrorValue(result));
+                return "reports/new";
+            }
+
+            // 日付が重複しない場合は、新規登録を行う
+            result = reportService.save(report, loginUser);
             if (result != ErrorKinds.SUCCESS) {
                 model.addAttribute("errorMessage", ErrorMessage.getErrorValue(result));
                 return "reports/new";
@@ -98,6 +100,57 @@ import com.techacademy.service.UserDetail;
 
             return "redirect:/reports";
         }
+
+
+////    ■■日付重複チェック　日報新規登録処理
+//        @PostMapping(value = "/add")
+//        public String add(@Validated @ModelAttribute("report") Report report, BindingResult res, @AuthenticationPrincipal UserDetail userDetail, Model model) {
+//            if (res.hasErrors()) {
+//                model.addAttribute("loginUser", userDetail.getEmployee());
+//                return "reports/new";
+//            }
+//
+//            Employee loginUser = userDetail.getEmployee();
+//            report.setEmployee(loginUser);
+//
+//            // 日付の重複チェックを含む日報保存処理
+//            ErrorKinds result = reportService.save(report, loginUser);
+//            if (result == ErrorKinds.DUPLICATE_DATE_ERROR) {
+//                model.addAttribute("errorMessage", ErrorMessage.getErrorValue(result));
+//                return "reports/new";
+//            } else if (result != ErrorKinds.SUCCESS) {
+//                model.addAttribute("errorMessage", ErrorMessage.getErrorValue(result));
+//                return "reports/new";
+//            }
+//
+//            return "redirect:/reports";
+//        }
+
+
+
+
+////         ■■最初前の日報 新規登録処理
+//        @PostMapping(value = "/add")
+//        public String add(@Validated @ModelAttribute("report") Report report, BindingResult Res, @AuthenticationPrincipal UserDetail userDetail, Model model) {
+//
+//            if (Res.hasErrors()) {
+//                // バリデーションエラーがある場合、フォームを再表示
+//                model.addAttribute("loginUser", userDetail.getEmployee());
+//                return "reports/new";
+//            }
+//
+//            // 以下の処理はバリデーションが成功した場合のみ実行される
+//            Employee loginUser = userDetail.getEmployee();
+//            report.setEmployee(loginUser);
+//
+//            ErrorKinds result = reportService.save(report);
+//            if (result != ErrorKinds.SUCCESS) {
+//                model.addAttribute("errorMessage", ErrorMessage.getErrorValue(result));
+//                return "reports/new";
+//            }
+//
+//            return "redirect:/reports";
+//        }
 
 
 

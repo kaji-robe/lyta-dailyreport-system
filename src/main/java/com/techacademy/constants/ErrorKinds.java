@@ -29,6 +29,9 @@ public enum ErrorKinds {
     CONTENTCHECK_BLANK_ERROR,
 // 日報内容桁数チェックエラー
     CONTENTCHECK_RANGE_ERROR,
+ // 日報日付重複エラー
+    DUPLICATE_DATE_ERROR,
+
 
     // チェックOK
     CHECK_OK,
