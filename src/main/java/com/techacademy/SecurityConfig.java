@@ -15,13 +15,15 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.formLogin(login -> login.loginProcessingUrl("/login") // 従業員番号・パスワードの送信先
                 .loginPage("/login") // ログイン画面
-                .defaultSuccessUrl("/") // ログイン成功後のリダイレクト先
+                .defaultSuccessUrl("/reports") // ログイン成功後のリダイレクト先
                 .failureUrl("/login?error") // ログイン失敗時のリダイレクト先
                 .permitAll() // ログイン画面は未ログインでアクセス可
         ).logout(logout -> logout.logoutSuccessUrl("/login") // ログアウト後のリダイレクト先
         ).authorizeHttpRequests(
                 auth -> auth.requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // css等は未ログインでアクセス可
-                        .requestMatchers("/employees/**").hasAnyAuthority("ADMIN").anyRequest().authenticated()); // その他はログイン必要
+                        .requestMatchers("/employees/**").hasAnyAuthority("ADMIN") //従業員関連はADMINだけ
+                        .requestMatchers("/reports/**").hasAnyAuthority("ADMIN", "GENERAL") // 日報関連ページへのアクセスはADMINとGENERAL
+                        .anyRequest().authenticated()); // その他はログイン必要
 
         return http.build();
     }

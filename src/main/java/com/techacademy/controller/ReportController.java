@@ -1,5 +1,7 @@
 package com.techacademy.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -31,13 +33,37 @@ import com.techacademy.service.UserDetail;
             this.reportService = reportService;
         }
 
-        // ■■ 日報　一覧画面の表示
+
+
         @GetMapping
-        public String list(Model model) {
-            model.addAttribute("listSize", reportService.findAll().size());
-            model.addAttribute("reportList", reportService.findAll());
+        public String list(@AuthenticationPrincipal UserDetail userDetail, Model model) {
+            // ログインユーザーの取得
+            Employee loggedInUser = userDetail.getEmployee();
+            List<Report> reportList;
+
+            // ADMIN権限を持つユーザーは全ての日報を表示、それ以外（GENERALなど）は自分の日報のみ表示
+            if (userDetail.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ADMIN"))) {
+                reportList = reportService.findAll();
+            } else {
+                reportList = reportService.findByEmployee(loggedInUser);
+            }
+
+            model.addAttribute("listSize", reportList.size());
+            model.addAttribute("reportList", reportList);
             return "reports/list";
         }
+
+
+        // ■■ 日報　一覧画面の表示　全リストと分別なく表示
+//        @GetMapping
+//        public String list(Model model) {
+//            model.addAttribute("listSize", reportService.findAll().size());
+//            model.addAttribute("reportList", reportService.findAll());
+//            return "reports/list";
+//        }
+
+
+
 
 
         // ■■ 日報　新規登録画面の表示

@@ -31,12 +31,15 @@ public class ReportService {
 
 
 
-    // ■■ 日報一覧表示処理 ■■
+   // ■■ 既存の日報一覧表示処理 分別なしですべて表示
     public List<Report> findAll() {
         return reportRepository.findAll();
     }
 
-
+    // 特定の従業員に関連する日報を取得するメソッド
+    public List<Report> findByEmployee(Employee employee) {
+        return reportRepository.findByEmployee(employee);
+    }
 
     // ■■ 日報 1件を検索 ■■
     public Report findById(Integer id) {
