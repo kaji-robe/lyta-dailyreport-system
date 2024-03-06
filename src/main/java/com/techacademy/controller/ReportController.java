@@ -1,5 +1,6 @@
 package com.techacademy.controller;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,12 +16,15 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+
+import javax.servlet.http.HttpServletResponse;
 import com.techacademy.constants.ErrorKinds;
 import com.techacademy.constants.ErrorMessage;
 import com.techacademy.entity.Employee;
 import com.techacademy.entity.Report;
 import com.techacademy.service.ReportService;
 import com.techacademy.service.UserDetail;
+
 
 @Controller
 @RequestMapping("reports")
@@ -223,5 +227,18 @@ public class ReportController {
 
         return "redirect:/reports";
     }
+
+    // ■■日報一覧のCSVエクスポート
+    @GetMapping("/export/csv")
+    public void exportReportsToCsv(HttpServletResponse response) throws IOException {
+        // 正しいメソッド名で呼び出す
+        reportService.exportReportsToCsv(response);
+
+    }
+
+//    @GetMapping("/reports/export/csv")
+//    public String testCsvExport() {
+//        return "CSV Export is working!";
+//    }
 
 }

@@ -113,7 +113,7 @@ public class EmployeeController {
         Employee employee = employeeService.findByCode(code);
         if (employee == null) {
             // 従業員が見つからない場合の処理
-           return "redirect:/employees";
+            return "redirect:/employees";
         }
         model.addAttribute("employee", employee);
         return "employees/update";
@@ -121,10 +121,10 @@ public class EmployeeController {
 
 
 
- // 従業員の更新処理
+    // 従業員の更新処理
     @PostMapping(value = "/{code}/update")
     public String update(@PathVariable String code, @Validated @ModelAttribute("employee") Employee updatedEmployee,
-                          BindingResult result, Model model) {
+            BindingResult result, Model model) {
         if (result.hasErrors()) {
             // エラーがある場合
             return "employees/update";
@@ -137,7 +137,7 @@ public class EmployeeController {
 //            // 従業員が見つからない場合の処理
 //            return "redirect:/employees";
 //        } else
-            if (updateResult != ErrorKinds.SUCCESS) {
+        if (updateResult != ErrorKinds.SUCCESS) {
             // 更新に失敗した場合の処理
             model.addAttribute(ErrorMessage.getErrorName(updateResult), ErrorMessage.getErrorValue(updateResult));
             return "employees/update";

@@ -23,6 +23,7 @@ public class SecurityConfig {
                 auth -> auth.requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // css等は未ログインでアクセス可
                         .requestMatchers("/employees/**").hasAnyAuthority("ADMIN") //従業員関連はADMINだけ
                         .requestMatchers("/reports/**").hasAnyAuthority("ADMIN", "GENERAL") // 日報関連ページへのアクセスはADMINとGENERAL
+                        .requestMatchers("/reports/export/csv").hasAnyAuthority("ADMIN") // 日報CSVエクスポートへのアクセスはADMIN
                         .anyRequest().authenticated()); // その他はログイン必要
 
         return http.build();

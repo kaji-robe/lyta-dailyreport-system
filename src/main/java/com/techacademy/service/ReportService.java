@@ -11,6 +11,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+
+
 import com.techacademy.constants.ErrorKinds;
 import com.techacademy.entity.Employee;
 import com.techacademy.entity.Report;
@@ -42,15 +49,11 @@ public class ReportService {
     }
 
 
-
-
     // ■■特定の従業員に関連する日報を取得するメソッド
     public List<Report> findByEmployee(Employee employee) {
         // return reportRepository.findByEmployee(employee);
         return reportRepository.findByEmployeeAndDeleteFlgFalse(employee);
     }
-
-
 
     // ■■権限に応じた日報一覧を取得するメソッド
     public List<Report> getReportsForUser(Employee employee) {
@@ -65,7 +68,6 @@ public class ReportService {
     }
 
 
-
     // ■■ 日報 1件を検索 ■■
     public Report findById(Integer id) {
         // findByIdで検索
@@ -74,7 +76,6 @@ public class ReportService {
         Report report = option.orElse(null);
         return report;
     }
-
 
 
     // ■■ 日報保存
@@ -123,8 +124,6 @@ public class ReportService {
 //      return ErrorKinds.SUCCESS; // 成功した場合
 //  }
 //
-
-
 
 //    // ■■ 最初の日報保存
 //    @Transactional
@@ -221,6 +220,21 @@ public class ReportService {
             return ErrorKinds.DUPLICATE_DATE_ERROR;
         }
         return ErrorKinds.SUCCESS;
+    }
+
+//　日報のCSVエクスポート
+    public void exportReportsToCsv(HttpServletResponse response) throws IOException {
+        List<Report> reports = findAll(); // すべての日報を取得
+        response.setContentType("text/csv");
+        response.setHeader("Content-Disposition", "attachment; filename=\"reports.csv\"");
+        CSVPrinter csvPrinter = new CSVPrinter(response.getWriter(),
+                CSVFormat.DEFAULT.withHeader("ID", "Employee", "Report Date", "Title", "Content"));
+
+        for (Report report : reports) {
+            csvPrinter.printRecord(report.getId(), report.getEmployee().getName(),
+                    report.getReportDate(), report.getTitle(), report.getContent());
+        }
+        csvPrinter.flush();
     }
 
 }

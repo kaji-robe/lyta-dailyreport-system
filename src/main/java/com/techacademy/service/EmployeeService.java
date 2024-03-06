@@ -60,7 +60,7 @@ public class EmployeeService {
 
 
 
-    //更新処理
+    // 更新処理
     @Transactional
     public ErrorKinds updateEmployee(String code, Employee updatedEmployee) {
         // 従業員を検索
@@ -94,7 +94,6 @@ public class EmployeeService {
     }
 
 
-
     // 従業員削除
     @Transactional
     public ErrorKinds delete(String code, UserDetail userDetail) {
@@ -107,7 +106,6 @@ public class EmployeeService {
         LocalDateTime now = LocalDateTime.now();
         employee.setUpdatedAt(now);
         employee.setDeleteFlg(true);
-
 
         // 削除対象の従業員（employee）に紐づいている、日報のリスト（reportList）を取得
         List<Report> reportList = reportService.findByEmployee(employee);
@@ -131,12 +129,10 @@ public class EmployeeService {
     }
 
 
-
     // 従業員一覧表示処理
     public List<Employee> findAll() {
         return employeeRepository.findAll();
     }
-
 
 
     // 1件を検索
@@ -147,7 +143,6 @@ public class EmployeeService {
         Employee employee = option.orElse(null);
         return employee;
     }
-
 
 
     // 従業員パスワードチェック
@@ -164,9 +159,9 @@ public class EmployeeService {
         }
 
         // パスワードが空白の場合はエラーチェックしない
-        //if ("".equals(employee.getPassword())) {
-        //    return ErrorKinds.SUCCESS;
-        //}
+        // if ("".equals(employee.getPassword())) {
+        // return ErrorKinds.SUCCESS;
+        // }
 
         employee.setPassword(passwordEncoder.encode(employee.getPassword()));
 
