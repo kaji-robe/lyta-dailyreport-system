@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.techacademy.constants.ErrorKinds;
 import com.techacademy.entity.Employee;
+import com.techacademy.entity.Report;
 import com.techacademy.repository.EmployeeRepository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +27,9 @@ public class EmployeeService {
         this.employeeRepository = employeeRepository;
         this.passwordEncoder = passwordEncoder;
     }
+
+    @Autowired
+    private ReportService reportService;
 
 
     // 従業員保存
@@ -61,9 +65,9 @@ public class EmployeeService {
     public ErrorKinds updateEmployee(String code, Employee updatedEmployee) {
         // 従業員を検索
         Employee employee = findByCode(code);
-        if (employee == null) {
-            return ErrorKinds.NOT_FOUND_ERROR;
-        }
+//        if (employee == null) {
+//            return ErrorKinds.NOT_FOUND_ERROR;
+//        }
 
         // 名前と権限の更新
         employee.setName(updatedEmployee.getName());
@@ -104,6 +108,25 @@ public class EmployeeService {
         employee.setUpdatedAt(now);
         employee.setDeleteFlg(true);
 
+
+        // 削除対象の従業員（employee）に紐づいている、日報のリスト（reportList）を取得
+        List<Report> reportList = reportService.findByEmployee(employee);
+
+        // 日報のリスト（reportList）を拡張for文を使って繰り返し
+        for (Report report : reportList) {
+            // 日報（report）のIDを指定して、日報情報を削除
+            reportService.delete(report.getId(), userDetail);
+        }
+
+//      //別パターン
+//        List<Report> reportList = employee.getReportList();
+//        if (reportList != null) {
+//            for (Report report : reportList) {
+//                report.setDeleteFlg(true); // 日報の削除フラグをtrueに設定
+//                report.setUpdatedAt(now); // 更新日時を設定
+//            }
+//        }
+
         return ErrorKinds.SUCCESS;
     }
 
@@ -129,7 +152,6 @@ public class EmployeeService {
 
     // 従業員パスワードチェック
     public ErrorKinds employeePasswordCheck(Employee employee) {
-
 
         // 従業員パスワードの半角英数字チェック処理
         if (isHalfSizeCheckError(employee)) {

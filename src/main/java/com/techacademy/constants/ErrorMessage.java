@@ -40,7 +40,7 @@ public class ErrorMessage {
             // 日報内容600文字桁数チェック用エラーメッセージ
             put(ErrorKinds.CONTENTCHECK_RANGE_ERROR, new ArrayList<String>(Arrays.asList("reportContentRangekError", "600文字以下で入力してください")));
          // 日報新規作成で 日付重複エラー用エラーメッセージ
-            put(ErrorKinds.DUPLICATE_DATE_ERROR, new ArrayList<String>(Arrays.asList("reportDateCheckError", "既に登録されている日付です")));
+            put(ErrorKinds.DUPLICATE_DATE_ERROR, new ArrayList<String>(Arrays.asList("reportDateCheckError", "aaaaa既に登録されている日付です")));
 
 
 

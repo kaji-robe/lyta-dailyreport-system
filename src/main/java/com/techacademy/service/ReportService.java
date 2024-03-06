@@ -17,7 +17,6 @@ import com.techacademy.entity.Report;
 import com.techacademy.repository.ReportRepository;
 import com.techacademy.repository.EmployeeRepository;
 
-
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -37,17 +36,34 @@ public class ReportService {
 //        return reportRepository.findAll();
 //    }
 
-
     // ■■論理削除されていない全ての日報を取得
     public List<Report> findAll() {
         return reportRepository.findByDeleteFlgFalse();
     }
 
+
+
     // ■■特定の従業員に関連する日報を取得するメソッド
     public List<Report> findByEmployee(Employee employee) {
-        //return reportRepository.findByEmployee(employee);
+        // return reportRepository.findByEmployee(employee);
         return reportRepository.findByEmployeeAndDeleteFlgFalse(employee);
     }
+
+
+
+    // ■■権限に応じた日報一覧を取得するメソッド
+    public List<Report> getReportsForUser(Employee employee) {
+        // 従業員の権限に応じて条件分岐
+        if (employee.getRole() == Employee.Role.ADMIN) {
+            // ADMIN権限を持つユーザーは全ての日報を表示
+            return reportRepository.findByDeleteFlgFalse();
+        } else {
+            // GENERAL権限を持つユーザーは自分の日報のみ表示
+            return reportRepository.findByEmployeeAndDeleteFlgFalse(employee);
+        }
+    }
+
+
 
     // ■■ 日報 1件を検索 ■■
     public Report findById(Integer id) {
@@ -59,84 +75,54 @@ public class ReportService {
     }
 
 
- // 日報保存処理
+
+    // ■■ 日報保存
     @Transactional
-    public ErrorKinds save(Report report, Employee employee) {
-        // 日付の重複チェック
-        Optional<Report> existingReport = reportRepository.findByEmployeeAndReportDate(employee, report.getReportDate());
+    public ErrorKinds save(Report report, Employee loginUser) {
+        report.setEmployee(loginUser);
+
+        Optional<Report> existingReport = reportRepository.findByEmployeeAndReportDate(report.getEmployee(),
+                report.getReportDate());
         if (existingReport.isPresent()) {
-            // 既に同じ日付で日報が存在する場合
+            // 同じ日付で既に日報が存在する場合はエラーを返す
             return ErrorKinds.DUPLICATE_DATE_ERROR;
         }
 
-        // 重複がない場合、日報を保存
-        report.setEmployee(employee); // ログイン中の従業員を設定
-        report.setDeleteFlg(false); // 削除フラグをfalseに設定
-
+        report.setDeleteFlg(false); // 論理削除フラグをfalseに設定
         LocalDateTime now = LocalDateTime.now();
-        report.setCreatedAt(now); // 作成日時を設定
-        report.setUpdatedAt(now); // 更新日時を設定
+        report.setCreatedAt(now);
+        report.setUpdatedAt(now);
 
-        reportRepository.save(report); // 日報を保存
-
-        return ErrorKinds.SUCCESS; // 成功した場合
-    }
-
-    // 日付の重複チェック
-    public ErrorKinds checkDuplicateDate(LocalDate reportDate, Employee employee) {
-        Optional<Report> existingReport = reportRepository.findByEmployeeAndReportDate(employee, reportDate);
-        if (existingReport.isPresent()) {
-            // 既に同じ日付で日報が存在する場合
-            return ErrorKinds.DUPLICATE_DATE_ERROR;
-        }
-        return ErrorKinds.SUCCESS; // 重複がない場合
+        reportRepository.save(report);
+        return ErrorKinds.SUCCESS;
     }
 
 
-// // 日報保存処理
-//    @Transactional
-//    public ErrorKinds save(Report report, Employee employee) {
-//        // 日付の重複チェック
-//        Optional<Report> existingReport = reportRepository.findByEmployeeAndReportDate(employee, report.getReportDate());
-//        if (existingReport.isPresent()) {
-//            // 既に同じ日付で日報が存在する場合
-//            return ErrorKinds.DUPLICATE_DATE_ERROR;
-//        }
+
+// // 次の日報保存処理
+//  @Transactional
+//  public ErrorKinds save(Report report, Employee employee) {
+//      // 日付の重複チェック
+//      Optional<Report> existingReport = reportRepository.findByEmployeeAndReportDate(employee, report.getReportDate());
+//      if (existingReport.isPresent()) {
+//          // 既に同じ日付で日報が存在する場合
+//          return ErrorKinds.DUPLICATE_DATE_ERROR;
+//      }
 //
-//        // 重複がない場合、日報を保存
-//        report.setEmployee(employee); // ログイン中の従業員を設定
-//        report.setDeleteFlg(false); // 削除フラグをfalseに設定
+//      // 重複がない場合、日報を保存
+//      report.setEmployee(employee); // ログイン中の従業員を設定
+//      report.setDeleteFlg(false); // 削除フラグをfalseに設定
 //
-//        LocalDateTime now = LocalDateTime.now();
-//        report.setCreatedAt(now); // 作成日時を設定
-//        report.setUpdatedAt(now); // 更新日時を設定
+//      LocalDateTime now = LocalDateTime.now();
+//      report.setCreatedAt(now); // 作成日時を設定
+//      report.setUpdatedAt(now); // 更新日時を設定
 //
-//        reportRepository.save(report); // 日報を保存
+//      reportRepository.save(report); // 日報を保存
 //
-//        return ErrorKinds.SUCCESS; // 成功した場合
-//    }
+//      return ErrorKinds.SUCCESS; // 成功した場合
+//  }
 //
 
-
-////  // ■■ 日報保存
-//    @Transactional
-//    public ErrorKinds save(Report report, Employee loginUser) {
-//        report.setEmployee(loginUser);
-//
-//        Optional<Report> existingReport = reportRepository.findByEmployeeAndReportDate(report.getEmployee(), report.getReportDate());
-//        if (existingReport.isPresent()) {
-//            // 同じ日付で既に日報が存在する場合はエラーを返す
-//            return ErrorKinds.DUPLICATE_DATE_ERROR;
-//        }
-//
-//        report.setDeleteFlg(false); // 論理削除フラグをfalseに設定
-//        LocalDateTime now = LocalDateTime.now();
-//        report.setCreatedAt(now);
-//        report.setUpdatedAt(now);
-//
-//        reportRepository.save(report);
-//        return ErrorKinds.SUCCESS;
-//    }
 
 
 //    // ■■ 最初の日報保存
@@ -156,7 +142,7 @@ public class ReportService {
 
 
 
-    //■■　日報更新処理
+    // ■■ 日報更新処理
     @Transactional
     public ErrorKinds updateReport(Integer id, Report updatedReport) {
         // 日報を検索
@@ -166,18 +152,17 @@ public class ReportService {
         }
 
         // 名前と権限の更新
-        ////employee.setName(updatedEmployee.getName());
-        //employee.setRole(updatedEmployee.getRole());
+        //// employee.setName(updatedEmployee.getName());
+        // employee.setRole(updatedEmployee.getRole());
         // パスワードが空白でない場合のみ更新
-        //if (!"".equals(updatedEmployee.getPassword())) {
-        //    // パスワードチェック
-        //    ErrorKinds passwordCheckResult = employeePasswordCheck(updatedEmployee);
-        //    if (passwordCheckResult != ErrorKinds.CHECK_OK) {
-        //        return passwordCheckResult; // パスワードチェックエラー
-        //    }
-        //    employee.setPassword(updatedEmployee.getPassword());
+        // if (!"".equals(updatedEmployee.getPassword())) {
+        // // パスワードチェック
+        // ErrorKinds passwordCheckResult = employeePasswordCheck(updatedEmployee);
+        // if (passwordCheckResult != ErrorKinds.CHECK_OK) {
+        // return passwordCheckResult; // パスワードチェックエラー
         // }
-
+        // employee.setPassword(updatedEmployee.getPassword());
+        // }
 
         // タイトル、内容、時間の更新
         report.setTitle(updatedReport.getTitle());
@@ -187,7 +172,6 @@ public class ReportService {
 
         reportRepository.save(report);
         return ErrorKinds.SUCCESS;
-
     }
 
 
@@ -204,5 +188,38 @@ public class ReportService {
 
 
 
+//    //■■　合格時の日報の新規登録日付の重複チェック
+//    public ErrorKinds checkDuplicateReportDate(Employee employee, LocalDate reportDate) {
+//        Optional<Report> existingReport = reportRepository.findByEmployeeAndReportDate(employee, reportDate);
+//        if (existingReport.isPresent()) {
+//            // 既に同じ日に日報が存在する場合はエラーを返す
+//            return ErrorKinds.DUPLICATE_DATE_ERROR;
+//        }
+//        return ErrorKinds.SUCCESS;
+//    }
+
+
+
+    // ■■ 新規の日報の新規登録日付の重複チェック
+    public ErrorKinds checkDuplicateReportDate(Employee employee, LocalDate reportDate) {
+        Optional<Report> existingReport = reportRepository.findByEmployeeAndReportDate(employee, reportDate);
+        if (existingReport.isPresent()) {
+            // 既に同じ日に日報が存在する場合はエラーを返す
+            return ErrorKinds.DUPLICATE_DATE_ERROR;
+        }
+        return ErrorKinds.SUCCESS;
+    }
+
+
+
+    // ■■ 日報の更新時の日付重複チェック
+    public ErrorKinds checkDuplicateReportDateForUpdate(Integer reportId, Employee employee, LocalDate reportDate) {
+        Optional<Report> existingReport = reportRepository.findByEmployeeAndReportDate(employee, reportDate);
+        if (existingReport.isPresent() && !existingReport.get().getId().equals(reportId)) {
+            // 他の日報で同じ日付が使用されている場合はエラーを返す
+            return ErrorKinds.DUPLICATE_DATE_ERROR;
+        }
+        return ErrorKinds.SUCCESS;
+    }
 
 }
