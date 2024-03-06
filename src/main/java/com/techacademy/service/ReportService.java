@@ -43,6 +43,7 @@ public class ReportService {
 
 
 
+
     // ■■特定の従業員に関連する日報を取得するメソッド
     public List<Report> findByEmployee(Employee employee) {
         // return reportRepository.findByEmployee(employee);
